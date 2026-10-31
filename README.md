@@ -1,5 +1,5 @@
 # Group04-10.-Course-Registration-Svstem
-//```markdown
+```markdown
 II. Non-functional requirements:
   1. Product requirements:
      1.1. Usability requirements:
