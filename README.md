@@ -1,6 +1,4 @@
 # Group04-10.-Course-Registration-Svstem
-i dont know
-
 ```markdown
 II. Non-functional requirements:
   1. Product requirements:
