@@ -48,19 +48,45 @@ I. FUNCTIONAL REQUIREMENTS
 - The system shall automatically update registration records after successful registration or cancellation.
 - The system shall update the number of available seats after each registration transaction.
 - The system shall ensure that registration information is stored accurately in the database.
-5. Course Administration Requirements 
-5.1. Manage Course Information:
+5. Tuition Fee Payment Requirements
+5.1. Calculate Tuition Fees
+- The system shall automatically calculate tuition fees based on the total number of credits of courses registered by each student.
+- The system shall display the price per credit.
+- The system shall display the total tuition fee that each student needs to pay.
+- The system shall update the tuition fee when a student adds or cancels a course.
+5.2. View Payment Information
+- The system shall allow students to view their tuition fee information.
+- The system shall display student ID, total registered credits, total tuition fees, and payment status.
+- The system shall display the tuition fee payment deadline.
+5.3. Make Payment
+- The system shall allow students to pay their tuition fees.
+- The system shall support payment methods accepted by the university.
+- The system shall confirm the transaction after successful payment.
+- The system shall notify students when a payment fails.
+- The system shall prevent duplicate payment transactions for the same tuition fee.
+5.4. Payment History
+- The system shall store students' payment history.
+- The system shall display the payment amount, transaction date, and payment status for each transaction.
+- The system shall allow students to review their previous payment transactions.
+5.5. Payment Status Management
+- The system shall automatically update payment status after each transaction.
+- The system shall distinguish between the following payment statuses:
+  - Unpaid.
+  - Paid.
+  - Payment Failed.
+- The system shall store transaction information for verification and reconciliation purposes.
+6. Course Administration Requirements
+6.1. Manage Course Information
 - The system shall allow authorized administrators to add new courses.
 - The system shall allow administrators to update course information.
 - The system shall allow administrators to delete courses.
 - The system shall allow administrators to manage course capacity.
-5.2. Manage Student Information:
+6.2. Manage Student Information
 - The system shall allow authorized administrators to add student information.
 - The system shall allow administrators to update student information.
 - The system shall allow administrators to search for student accounts.
 - The system shall allow administrators to manage student accounts.
-5.3. View Registration Reports:
-- The system shall allow administrators to view registration records.
+6.3. View Registration Reports
+- The system shall allow administrators to view course registration records.
 - The system shall display the list of students registered for each course.
 - The system shall provide course registration information for management purposes.
-**End of Functional Requirements**
