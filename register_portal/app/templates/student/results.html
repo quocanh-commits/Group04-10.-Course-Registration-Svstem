@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Academic results — Register{% endblock %}
+{% block breadcrumb %}Academic results{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Academic results</h1>
+    <p>GPA overview, completed credits, and course grades.</p>
+  </div>
+</div>
+
+<div class="stats-grid-3">
+  <div class="stat-card">
+    <div class="stat-title">Cumulative GPA (4.0)</div>
+    <div class="stat-value teal">3.48</div>
+    <div class="stat-sub">Good standing · Honors track</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-title">Accumulated credits</div>
+    <div class="stat-value">68 / 135</div>
+    <div class="stat-sub">50.4% of curriculum completed</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-title">Failed / Retake courses</div>
+    <div class="stat-value" style="color:#059669;">0</div>
+    <div class="stat-sub">All prerequisite courses passed</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="font-size:16px;">Grade transcript</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Course code</th>
+        <th>Course name</th>
+        <th>Credits</th>
+        <th>Midterm</th>
+        <th>Final</th>
+        <th>Grade</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in grades %}
+      <tr>
+        <td><strong>{{ r.code }}</strong></td>
+        <td>{{ r.name }}</td>
+        <td>{{ r.credits }}</td>
+        <td>{{ r.midterm }}</td>
+        <td>{{ r.final }}</td>
+        <td><span class="badge badge-available">{{ r.letter }} ({{ r.gpa }})</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

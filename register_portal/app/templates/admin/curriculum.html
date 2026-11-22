@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Curriculum — Administrator{% endblock %}
+{% block breadcrumb %}Curriculum{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Curriculum & courses</h1>
+    <p>Catalog of degree courses, credit weights, and prerequisites.</p>
+  </div>
+</div>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Course title</th>
+        <th>Credits</th>
+        <th>Prerequisite</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in courses %}
+      <tr>
+        <td><strong>{{ c.code }}</strong></td>
+        <td>{{ c.name }}</td>
+        <td>{{ c.credits }}</td>
+        <td>{{ c.prereq }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
