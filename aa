@@ -1,0 +1,145 @@
+-- =====================================================
+-- PHẦN 1: TẠO BẢNG
+-- =====================================================
+
+CREATE TABLE administrator (
+    adminId CHAR(5) PRIMARY KEY,
+    fullName VARCHAR(50) NOT NULL,
+    passwordHash CHAR(60) NOT NULL,
+    dateOfBirth DATE NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    adminRole VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE lecturer (
+    lecturerId CHAR(5) PRIMARY KEY,
+    fullName VARCHAR(50) NOT NULL,
+    passwordHash CHAR(60) NOT NULL,
+    dateOfBirth DATE NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    department VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE student (
+    studentId CHAR(5) PRIMARY KEY,
+    fullName VARCHAR(50) NOT NULL,
+    passwordHash CHAR(60) NOT NULL,
+    dateOfBirth DATE NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    enrollmentYear INTEGER NOT NULL,
+    major VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE course (
+    courseId CHAR(5) PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    credits INTEGER NOT NULL,
+    adminId CHAR(5) NOT NULL,
+    CONSTRAINT fk_course_admin
+        FOREIGN KEY (adminId)
+        REFERENCES administrator(adminId)
+);
+
+CREATE TABLE registrationTerm (
+    termId VARCHAR(10) PRIMARY KEY,
+    semesterName CHAR(10) NOT NULL,
+    startDate DATE NOT NULL,
+    endDate DATE NOT NULL,
+    registrationOpen DATE NOT NULL,
+    registrationClose DATE NOT NULL
+);
+
+-- Lớp học phần: một học phần mở nhiều lớp trong một đợt
+CREATE TABLE classSection (
+    classId VARCHAR(10) PRIMARY KEY,
+    courseId CHAR(5) NOT NULL,
+    termId VARCHAR(10) NOT NULL,
+    lecturerId CHAR(5),
+    room VARCHAR(20) NOT NULL,
+    dayOfWeek INTEGER NOT NULL,
+    startPeriod INTEGER NOT NULL,
+    endPeriod INTEGER NOT NULL,
+    capacity INTEGER NOT NULL,
+    CONSTRAINT fk_class_course
+        FOREIGN KEY (courseId)
+        REFERENCES course(courseId),
+    CONSTRAINT fk_class_term
+        FOREIGN KEY (termId)
+        REFERENCES registrationTerm(termId),
+    CONSTRAINT fk_class_lecturer
+        FOREIGN KEY (lecturerId)
+        REFERENCES lecturer(lecturerId),
+    CONSTRAINT ck_class_day
+        CHECK (dayOfWeek BETWEEN 2 AND 8),
+    CONSTRAINT ck_class_period
+        CHECK (startPeriod <= endPeriod),
+    CONSTRAINT ck_class_capacity
+        CHECK (capacity > 0)
+);
+
+-- Đăng ký học phần của sinh viên (kèm điểm)
+CREATE TABLE enrollment (
+    enrollmentId VARCHAR(10) PRIMARY KEY,
+    studentId CHAR(5) NOT NULL,
+    classId VARCHAR(10) NOT NULL,
+    status VARCHAR(10) NOT NULL DEFAULT 'REGISTERED',
+    midterm DECIMAL(4,2),
+    final DECIMAL(4,2),
+    registeredAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_enrollment_student
+        FOREIGN KEY (studentId)
+        REFERENCES student(studentId),
+    CONSTRAINT fk_enrollment_class
+        FOREIGN KEY (classId)
+        REFERENCES classSection(classId),
+    CONSTRAINT uq_enrollment_student_class
+        UNIQUE (studentId, classId),
+    CONSTRAINT ck_enrollment_status
+        CHECK (status IN ('REGISTERED', 'CANCELLED')),
+    CONSTRAINT ck_enrollment_midterm
+        CHECK (midterm IS NULL OR midterm BETWEEN 0 AND 10),
+    CONSTRAINT ck_enrollment_final
+        CHECK (final IS NULL OR final BETWEEN 0 AND 10)
+);
+
+-- Danh sách môn sinh viên muốn học, chờ admin duyệt
+CREATE TABLE wishlistRecord (
+    recordId VARCHAR(10) PRIMARY KEY,
+    studentId CHAR(5) NOT NULL,
+    courseId CHAR(5) NOT NULL,
+    addedDate DATE NOT NULL,
+    approvalStatus VARCHAR(10) NOT NULL DEFAULT 'DRAFT',
+    CONSTRAINT fk_wishlist_student
+        FOREIGN KEY (studentId)
+        REFERENCES student(studentId),
+    CONSTRAINT fk_wishlist_course
+        FOREIGN KEY (courseId)
+        REFERENCES course(courseId),
+    CONSTRAINT uq_wishlist_student_course
+        UNIQUE (studentId, courseId),
+    CONSTRAINT ck_wishlist_status
+        CHECK (approvalStatus IN ('DRAFT', 'PENDING', 'APPROVED', 'REJECTED'))
+);
+
+-- Thanh toán học phí
+CREATE TABLE payment (
+    paymentId VARCHAR(10) PRIMARY KEY,
+    studentId CHAR(5) NOT NULL,
+    termId VARCHAR(10) NOT NULL,
+    amount INTEGER NOT NULL,
+    paymentStatus VARCHAR(10) NOT NULL DEFAULT 'PENDING',
+    transactionRef VARCHAR(60),
+    createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_payment_student
+        FOREIGN KEY (studentId)
+        REFERENCES student(studentId),
+    CONSTRAINT fk_payment_term
+        FOREIGN KEY (termId)
+        REFERENCES registrationTerm(termId),
+    CONSTRAINT ck_payment_amount
+        CHECK (amount > 0),
+    CONSTRAINT ck_payment_status
+        CHECK (paymentStatus IN ('PENDING', 'SUCCESS', 'FAILED'))
+);
+
+
