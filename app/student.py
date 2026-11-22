@@ -1,7 +1,5 @@
-
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
-
 from app.extensions import db
 from app.models.course import Course
 from app.models.class_section import ClassSection
@@ -15,7 +13,6 @@ student_bp = Blueprint("student", __name__, url_prefix="/student")
 @login_required
 def index():
     return render_template("student/index.html")
-
 # 2. Tìm kiếm học phần
 @student_bp.route("/courses")
 @login_required
@@ -30,7 +27,6 @@ def courses():
         "student/registration.html",
         courses=courses
     )
-
 # 3. Đăng ký học phần
 @student_bp.route("/register/<int:class_id>")
 @login_required
