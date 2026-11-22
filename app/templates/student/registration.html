@@ -1,0 +1,59 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2>Tìm kiếm học phần</h2>
+
+    <form method="GET" class="d-flex mb-3">
+
+        <input type="text"
+               name="q"
+               class="form-control"
+               placeholder="Nhập tên học phần">
+
+        <button class="btn btn-primary ms-2">
+            Tìm kiếm
+        </button>
+
+    </form>
+
+    <table class="table table-bordered">
+
+        <thead>
+            <tr>
+                <th>Mã học phần</th>
+                <th>Tên học phần</th>
+                <th>Tín chỉ</th>
+                <th>Yêu thích</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.course_code }}</td>
+                <td>{{ course.course_name }}</td>
+                <td>{{ course.credits }}</td>
+
+                <td>
+                    <a href="{{ url_for(
+                        'student.add_wishlist',
+                        course_id=course.id
+                    ) }}" class="btn btn-warning btn-sm">
+                        Yêu thích
+                    </a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">Không có học phần.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+{% endblock %}
