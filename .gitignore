@@ -1,0 +1,19 @@
+# Môi trường ảo Python
+venv/
+.venv/
+
+# File cache của Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Biến môi trường nhạy cảm (chỉ giữ lại .env.example)
+.env
+.env.*
+!.env.example
+
+# File cấu hình IDE / OS thường gặp
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
