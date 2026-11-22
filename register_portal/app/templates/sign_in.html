@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign in — Register Academic Portal</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="signin-wrapper">
+    <!-- Cột trái Navy -->
+    <div class="signin-left">
+      <div>
+        <a href="#" class="brand">
+          <div class="brand-icon">🎓</div>
+          <span class="brand-name">register</span>
+        </a>
+      </div>
+
+      <div class="signin-hero">
+        <div class="signin-kicker">THANH DO UNIVERSITY</div>
+        <h1>A new step forward,<br>every semester.</h1>
+        <p>Take charge of your study plan. Connect all your academic activities in one place.</p>
+        <div class="signin-features">
+          <span>🛡️ Secure accounts</span>
+          <span>🔄 Synced data</span>
+        </div>
+      </div>
+
+      <div class="signin-footer-note">REGISTER / COURSE REGISTRATION SYSTEM</div>
+    </div>
+
+    <!-- Cột phải Form đăng nhập -->
+    <div class="signin-right">
+      <div class="signin-topbar">
+        <span>Online academic portal</span>
+        <a href="#">Help ↗</a>
+      </div>
+
+      <div class="signin-form-box">
+        <span class="pill-badge">Welcome back</span>
+        <h2>Sign in to Register</h2>
+        <p class="subtitle">Use your university-issued account to continue.</p>
+
+        <form method="POST" action="{{ url_for('auth.login') }}">
+          {% with messages = get_flashed_messages() %}
+            {% for m in messages %}
+              <div style="background:#FEF2F2; color:#B91C1C; border:1px solid #FECACA; padding:10px 12px; border-radius:8px; font-size:13px; margin-bottom:14px;">{{ m }}</div>
+            {% endfor %}
+          {% endwith %}
+          <div class="form-group">
+            <label>Sign in as</label>
+            <div class="role-tabs">
+              <button type="button" class="role-tab {% if selected_role == 'student' %}active{% endif %}" onclick="selectRole(this, 'student')">Student</button>
+              <button type="button" class="role-tab {% if selected_role == 'lecturer' %}active{% endif %}" onclick="selectRole(this, 'lecturer')">Lecturer</button>
+              <button type="button" class="role-tab {% if selected_role == 'admin' %}active{% endif %}" onclick="selectRole(this, 'admin')">Administrator</button>
+            </div>
+            <input type="hidden" name="role" id="roleInput" value="{{ selected_role }}">
+          </div>
+
+          <div class="form-group">
+            <label>Student ID / Username</label>
+            <input type="text" name="username" class="input-control" required autofocus>
+          </div>
+
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" class="input-control" required>
+          </div>
+
+          <div class="form-row-between">
+            <label style="display:flex; align-items:center; gap:8px; font-weight:400; color:#64748B;">
+              <input type="checkbox" name="remember"> Remember me
+            </label>
+            <a href="#" class="link-teal">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Sign in →</button>
+        </form>
+
+        <div class="security-note">
+          <span>🔒</span>
+          <span>Access is verified against your account. Selecting a role does not change university-assigned permissions.</span>
+        </div>
+      </div>
+
+      <div style="max-width:440px; margin:0 auto; width:100%; font-size:12px; color:#64748B;">
+        <p>Need help with your account?</p>
+        <p><a href="#" class="link-teal">hotro@thanhdo.edu.vn · (024) 3386 1601</a></p>
+        <p style="margin-top:4px; color:#94A3B8;">© 2026 Thanh Do University · Privacy policy</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function selectRole(btn, role) {
+      document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('roleInput').value = role;
+    }
+  </script>
+</body>
+</html>

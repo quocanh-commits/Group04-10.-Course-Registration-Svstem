@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Timetable — Register{% endblock %}
+{% block breadcrumb %}Timetable{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Weekly timetable</h1>
+    <p>Semester I · 2026–2027 · Weeks 1–15 class schedule.</p>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="font-size:16px;">Registered classes schedule</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Code</th>
+        <th>Course name</th>
+        <th>Time slot</th>
+        <th>Room</th>
+        <th>Lecturer</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in selected_courses %}
+      <tr>
+        <td><strong>{{ c.code }}</strong></td>
+        <td><span class="course-title">{{ c.name }}</span><span class="course-meta">{{ c.credits }} credits</span></td>
+        <td>{{ c.schedule }}</td>
+        <td>{{ c.room }}</td>
+        <td>{{ c.lecturer }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

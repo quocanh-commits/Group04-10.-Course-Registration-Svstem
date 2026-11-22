@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Attendance — Lecturer{% endblock %}
+{% block breadcrumb %}Attendance{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Student attendance</h1>
+    <p>Mark weekly attendance for CS205.01 · Object-oriented programming.</p>
+  </div>
+</div>
+
+<div class="card">
+  <form method="POST">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Student ID</th>
+          <th>Full name</th>
+          <th>Attended sessions</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for st in roster %}
+        <tr>
+          <td><strong>{{ st.sid }}</strong></td>
+          <td>{{ st.name }}</td>
+          <td>{{ st.sessions }}/10</td>
+          <td>
+            <select name="status_{{ st.sid }}" class="input-control" style="width:150px; height:36px;">
+              <option {{ 'selected' if st.status == 'Present' }}>Present</option>
+              <option {{ 'selected' if st.status == 'Excused' }}>Excused</option>
+              <option {{ 'selected' if st.status == 'Absent' }}>Absent</option>
+            </select>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div style="margin-top:16px; text-align:right;">
+      <button type="submit" class="btn btn-primary">Save attendance ✓</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

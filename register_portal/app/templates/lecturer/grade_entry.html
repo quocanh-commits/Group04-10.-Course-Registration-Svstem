@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Grade entry — Lecturer{% endblock %}
+{% block breadcrumb %}Grade entry{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Grade entry</h1>
+    <p>Enter midterm and final scores for enrolled students.</p>
+  </div>
+</div>
+
+<div class="card">
+  <form method="POST">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Student ID</th>
+          <th>Full name</th>
+          <th>Midterm (30%)</th>
+          <th>Final (70%)</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for st in roster %}
+        <tr>
+          <td><strong>{{ st.sid }}</strong></td>
+          <td>{{ st.name }}</td>
+          <td><input type="number" step="0.1" min="0" max="10" name="mid_{{ st.sid }}" value="{{ st.midterm }}" class="input-control" style="width:90px; height:36px;"></td>
+          <td><input type="number" step="0.1" min="0" max="10" name="fin_{{ st.sid }}" value="{{ st.final }}" class="input-control" style="width:90px; height:36px;"></td>
+          <td><strong>{{ "%.1f"|format(st.midterm * 0.3 + st.final * 0.7) }}</strong></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div style="margin-top:16px; text-align:right;">
+      <button type="submit" class="btn btn-primary">Publish grades ✓</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

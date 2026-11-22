@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Register Portal{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div>
+        <a href="{{ url_for('auth.login') }}" class="brand">
+          <div class="brand-icon">🎓</div>
+          <span class="brand-name">register</span>
+        </a>
+        <div class="sidebar-sub">THANH DO UNIVERSITY · ACADEMIC PORTAL</div>
+
+        <div class="sidebar-label">WORKSPACE</div>
+        <div class="workspace-pill">
+          {% if workspace_role == 'Lecturer' %}👨‍🏫 Lecturer
+          {% elif workspace_role == 'Administrator' %}🛡️ Administrator
+          {% else %}🎓 Student{% endif %}
+        </div>
+
+        <nav class="nav-menu">
+          {% if workspace_role == 'Lecturer' %}
+            <a href="{{ url_for('lecturer.lecturer_classes') }}" class="nav-item {% if active_page == 'classes' %}active{% endif %}">📚 Teaching classes</a>
+            <a href="{{ url_for('lecturer.lecturer_attendance') }}" class="nav-item {% if active_page == 'attendance' %}active{% endif %}">✅ Attendance</a>
+            <a href="{{ url_for('lecturer.lecturer_grades') }}" class="nav-item {% if active_page == 'grades' %}active{% endif %}">📝 Grade entry</a>
+            <a href="{{ url_for('lecturer.lecturer_announcements') }}" class="nav-item {% if active_page == 'announcements' %}active{% endif %}">📢 Class announcements</a>
+          {% elif workspace_role == 'Administrator' %}
+            <a href="{{ url_for('admin.admin_overview') }}" class="nav-item {% if active_page == 'overview' %}active{% endif %}">📊 Admin overview</a>
+            <a href="{{ url_for('admin.admin_periods') }}" class="nav-item {% if active_page == 'periods' %}active{% endif %}">🗓️ Registration periods</a>
+            <a href="{{ url_for('admin.admin_curriculum') }}" class="nav-item {% if active_page == 'curriculum' %}active{% endif %}">📖 Curriculum</a>
+            <a href="{{ url_for('admin.admin_assignments') }}" class="nav-item {% if active_page == 'assignments' %}active{% endif %}">👥 Teaching assignments</a>
+            <a href="{{ url_for('admin.admin_accounts') }}" class="nav-item {% if active_page == 'accounts' %}active{% endif %}">🔐 Accounts</a>
+          {% else %}
+            <a href="{{ url_for('student.course_search') }}" class="nav-item {% if active_page == 'search' %}active{% endif %}">🔍 Course search</a>
+            <a href="{{ url_for('student.course_registration') }}" class="nav-item {% if active_page == 'registration' %}active{% endif %}">📑 Course registration</a>
+            <a href="{{ url_for('student.student_timetable') }}" class="nav-item {% if active_page == 'timetable' %}active{% endif %}">📅 Timetable</a>
+            <a href="{{ url_for('student.student_results') }}" class="nav-item {% if active_page == 'results' %}active{% endif %}">📊 Academic results</a>
+            <a href="{{ url_for('student.student_tuition') }}" class="nav-item {% if active_page == 'tuition' %}active{% endif %}">💳 Tuition fees</a>
+          {% endif %}
+        </nav>
+
+        <div class="semester-card">
+          <div class="sc-label">CURRENT SEMESTER</div>
+          <div class="sc-title">Semester I · 2026–2027</div>
+          <div class="sc-status">Add/drop registration is open</div>
+          <div class="sc-time">Until 17:00 · 18/09/2026</div>
+        </div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <a href="{{ url_for('auth.logout') }}" class="nav-item" style="color:#FDA4AF;">↪ Sign out</a>
+        <div class="user-box">
+          <div class="avatar-circle">{{ user_initials | default('MA') }}</div>
+          <div>
+            <div style="font-size:13px; font-weight:600;">{{ user_name | default('Nguyễn Minh Anh') }}</div>
+            <div style="font-size:11px; color:#94A3B8;">{{ user_sub | default('Student · 23010015') }}</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-area">
+      <header class="topbar">
+        <div class="breadcrumb">
+          <span>🏠 Academic portal</span>
+          <span>/</span>
+          <strong>{% block breadcrumb %}Dashboard{% endblock %}</strong>
+        </div>
+        <div style="color:#64748B;">Monday, 14/09/2026 &nbsp;|&nbsp; 🔔 &nbsp; ❓</div>
+      </header>
+
+      <main class="content-container">
+        {% block content %}{% endblock %}
+      </main>
+
+      <footer class="app-footer">
+        <span>© 2026 Register · Thanh Do University</span>
+        <span>User guide · Academic support: (024) 3386 1601</span>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

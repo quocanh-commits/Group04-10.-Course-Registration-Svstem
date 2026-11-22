@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Tuition fees & Payment — Register{% endblock %}
+{% block breadcrumb %}Tuition fees{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Tuition fees & Payment</h1>
+    <p>Semester I · 2026–2027 billing summary and online payment.</p>
+  </div>
+</div>
+
+<div class="stats-grid-3">
+  <div class="stat-card">
+    <div class="stat-title">Total semester tuition</div>
+    <div class="stat-value">{{ "{:,}".format(tuition_total).replace(",", ".") }} ₫</div>
+    <div class="stat-sub">Registered course credits</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-title">Paid amount</div>
+    <div class="stat-value" style="color:#059669;">{{ "{:,}".format(tuition_paid).replace(",", ".") }} ₫</div>
+    <div class="stat-sub">Updated automatically</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-title">Remaining balance</div>
+    <div class="stat-value {{ 'teal' if tuition_due == 0 else 'amber' }}">{{ "{:,}".format(tuition_due).replace(",", ".") }} ₫</div>
+    <div class="stat-sub">{{ 'Settled in full' if tuition_due == 0 else 'Due before 25/09/2026' }}</div>
+  </div>
+</div>
+
+<div class="workspace-split">
+  <div class="card">
+    <h3 style="font-size:16px; margin-bottom:10px;">Fee breakdown</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Credits</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in selected_courses %}
+        <tr>
+          <td><span class="course-title">{{ c.name }}</span><span class="course-meta">{{ c.code }}</span></td>
+          <td>{{ c.credits }}</td>
+          <td>{{ "{:,}".format(c.credits * 1250000).replace(",", ".") }} ₫</td>
+          <td><span class="badge {{ 'badge-available' if tuition_due == 0 else 'badge-selected' }}">{{ 'Paid' if tuition_due == 0 else 'Pending' }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="font-size:16px; margin-bottom:12px;">Payment checkout</h3>
+    <form method="POST" action="{{ url_for('student.pay_tuition') }}">
+      <div class="form-group">
+        <label>Payment method</label>
+        <select name="method" class="input-control">
+          <option>University Bank Transfer (QR / NAPAS)</option>
+          <option>VNPay / Domestic ATM</option>
+          <option>E-Wallet (MoMo / ZaloPay)</option>
+        </select>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:16px; font-size:14px;">
+        <span>Amount due:</span>
+        <strong>{{ "{:,}".format(tuition_due).replace(",", ".") }} ₫</strong>
+      </div>
+      {% if tuition_due > 0 %}
+        <button type="submit" class="btn btn-primary btn-block">Pay tuition now 💳</button>
+      {% else %}
+        <button type="button" class="btn btn-disabled btn-block" disabled>Paid in full ✓</button>
+      {% endif %}
+    </form>
+  </div>
+</div>
+{% endblock %}

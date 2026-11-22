@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Teaching classes — Lecturer{% endblock %}
+{% block breadcrumb %}Teaching classes{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Teaching classes</h1>
+    <p>Semester I · 2026–2027 · Assigned course sections and student rosters.</p>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="font-size:16px;">Assigned classes</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Section</th>
+        <th>Course</th>
+        <th>Schedule / Room</th>
+        <th>Students</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cls in classes %}
+      <tr>
+        <td><strong>{{ cls.code }}</strong></td>
+        <td><span class="course-title">{{ cls.name }}</span><span class="course-meta">{{ cls.credits }} credits</span></td>
+        <td>{{ cls.schedule }} · {{ cls.room }}</td>
+        <td>{{ cls.enrolled }}/{{ cls.capacity }} enrolled</td>
+        <td>
+          <a href="{{ url_for('lecturer.lecturer_attendance') }}" class="btn btn-outline">Attendance</a>
+          <a href="{{ url_for('lecturer.lecturer_grades') }}" class="btn btn-primary">Grades</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

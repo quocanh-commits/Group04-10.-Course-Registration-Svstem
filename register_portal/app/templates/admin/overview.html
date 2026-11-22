@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Admin overview — Administrator{% endblock %}
+{% block breadcrumb %}Admin overview{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Admin overview</h1>
+    <p>Semester I · 2026–2027 system health and enrollment summary.</p>
+  </div>
+</div>
+
+<div class="stats-grid-4">
+  <div class="stat-card">
+    <div class="stat-title">Active students</div>
+    <div class="stat-value teal">1,840</div>
+    <div class="stat-sub">94% completed course plan</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-title">Open sections</div>
+    <div class="stat-value">64</div>
+    <div class="stat-sub">Across 6 faculties</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-title">Lecturers assigned</div>
+    <div class="stat-value">52</div>
+    <div class="stat-sub">100% schedules verified</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-title">Registration window</div>
+    <div class="stat-value" style="color:#059669;">Open</div>
+    <div class="stat-sub">Closes 18/09/2026</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="font-size:16px;">Quick management modules</h3>
+  <p style="font-size:12px; color:#64748B; margin-bottom:14px;">Navigate to configure registration periods, curriculum, teaching assignments, or accounts.</p>
+  <div style="display:flex; gap:10px; flex-wrap:wrap;">
+    <a href="{{ url_for('admin.admin_periods') }}" class="btn btn-primary">Registration periods</a>
+    <a href="{{ url_for('admin.admin_curriculum') }}" class="btn btn-outline">Curriculum</a>
+    <a href="{{ url_for('admin.admin_assignments') }}" class="btn btn-outline">Teaching assignments</a>
+    <a href="{{ url_for('admin.admin_accounts') }}" class="btn btn-outline">Accounts</a>
+  </div>
+</div>
+{% endblock %}

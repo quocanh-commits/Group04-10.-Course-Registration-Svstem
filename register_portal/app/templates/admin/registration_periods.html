@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Registration periods — Administrator{% endblock %}
+{% block breadcrumb %}Registration periods{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Registration periods</h1>
+    <p>Manage enrollment windows, credit caps, and add/drop deadlines.</p>
+  </div>
+</div>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Period</th>
+        <th>Window</th>
+        <th>Credit limit</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in periods %}
+      <tr>
+        <td><strong>{{ p.name }}</strong></td>
+        <td>{{ p.window }}</td>
+        <td>Max {{ p.max_credits }} credits</td>
+        <td><span class="badge {{ 'badge-available' if p.status == 'Open' else 'badge-full' }}">{{ p.status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

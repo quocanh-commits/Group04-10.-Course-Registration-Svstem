@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Teaching assignments — Administrator{% endblock %}
+{% block breadcrumb %}Teaching assignments{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Teaching assignments</h1>
+    <p>Assign lecturers, classrooms, and time slots to course sections.</p>
+  </div>
+</div>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Section</th>
+        <th>Course</th>
+        <th>Lecturer</th>
+        <th>Room / Schedule</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cls in classes %}
+      <tr>
+        <td><strong>{{ cls.code }}</strong></td>
+        <td>{{ cls.name }}</td>
+        <td>{{ cls.lecturer }}</td>
+        <td>{{ cls.room }} · {{ cls.schedule }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

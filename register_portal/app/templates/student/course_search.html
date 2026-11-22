@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Course search — Register{% endblock %}
+{% block breadcrumb %}Course search{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Course search</h1>
+    <p>Find classes that fit your degree plan and schedule.</p>
+  </div>
+  <select class="input-control" style="width: 210px;">
+    <option>Semester I · 2026–2027</option>
+  </select>
+</div>
+
+<div class="alert-banner">
+  <span>ℹ️</span>
+  <div>
+    <h4>Add/drop registration is open</h4>
+    <p>07/09–18/09/2026 · Maximum 24 credits · Check schedules and prerequisites before selecting classes.</p>
+  </div>
+</div>
+
+<!-- Bộ lọc tìm kiếm -->
+<div class="card">
+  <h3 style="font-size:16px;">Find course sections</h3>
+  <p style="font-size:12px; color:#64748B;">Class information reflects the selected semester.</p>
+
+  <form method="GET" class="filter-grid">
+    <div>
+      <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Course name / Code</label>
+      <input type="text" name="q" class="input-control" placeholder="Search course name or code" value="{{ request.args.get('q', '') }}">
+    </div>
+    <div>
+      <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Faculty</label>
+      <select name="faculty" class="input-control">
+        <option>Information Technology</option>
+      </select>
+    </div>
+    <div>
+      <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Credits</label>
+      <select name="credits" class="input-control">
+        <option>All</option>
+        <option>3</option>
+      </select>
+    </div>
+    <div>
+      <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Class status</label>
+      <select name="status" class="input-control">
+        <option>All statuses</option>
+        <option>Available</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">🔍 Search</button>
+  </form>
+</div>
+
+<!-- Bảng kết quả tìm kiếm -->
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <h3 style="font-size:16px;">Search results</h3>
+      <p style="font-size:12px; color:#64748B;">{{ courses|length }} course sections · Faculty of IT</p>
+    </div>
+    <a href="{{ url_for('student.course_registration') }}" class="btn btn-outline">📑 {{ selected_count }} classes selected</a>
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Course / Section</th>
+        <th>Cr.</th>
+        <th>Schedule / Room</th>
+        <th>Enrollment</th>
+        <th>Prerequisite</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in courses %}
+      <tr>
+        <td>
+          <span class="course-title">{{ c.name }}</span>
+          <span class="course-meta">{{ c.code }} · {{ c.lecturer }}</span>
+        </td>
+        <td>{{ c.credits }}</td>
+        <td>
+          <span class="course-title" style="font-weight:500;">{{ c.schedule }}</span>
+          <span class="course-meta">{{ c.room }} · Weeks 1–15</span>
+        </td>
+        <td>
+          <span class="course-title" style="font-weight:500;">{{ c.enrolled }}/{{ c.capacity }}</span>
+          <span class="course-meta">{{ 'Full' if c.enrolled >= c.capacity else (c.capacity - c.enrolled)|string + ' seats left' }}</span>
+        </td>
+        <td>
+          <span class="course-title" style="font-weight:500; color:{{ '#059669' if c.prereq_ok else '#DC2626' }};">{{ c.prereq }}</span>
+          <span class="course-meta">{{ 'Eligible' if c.prereq_ok else 'Complete prerequisite first' }}</span>
+        </td>
+        <td>
+          {% if c.status == 'Available' %}
+            <span class="badge badge-available">Available</span>
+          {% elif c.status == 'Full' %}
+            <span class="badge badge-full">Full</span>
+          {% else %}
+            <span class="badge badge-selected">Selected</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if c.status == 'Available' %}
+            <form method="POST" action="{{ url_for('student.select_course', code=c.code) }}">
+              <button type="submit" class="btn btn-outline">Select class</button>
+            </form>
+          {% else %}
+            <button class="btn btn-disabled" disabled>{{ c.status }}</button>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
