@@ -1,0 +1,39 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2>Trang sinh viên</h2>
+
+    <div class="list-group mt-3">
+
+        <a href="{{ url_for('student.courses') }}"
+           class="list-group-item list-group-item-action">
+            Tìm kiếm và đăng ký học phần
+        </a>
+
+        <a href="{{ url_for('student.wishlist') }}"
+           class="list-group-item list-group-item-action">
+            Danh sách yêu thích
+        </a>
+
+        <a href="{{ url_for('student.timetable') }}"
+           class="list-group-item list-group-item-action">
+            Thời khóa biểu
+        </a>
+
+        <a href="{{ url_for('student.results') }}"
+           class="list-group-item list-group-item-action">
+            Kết quả học tập
+        </a>
+
+        <a href="{{ url_for('student.tuition') }}"
+           class="list-group-item list-group-item-action">
+            Thông tin học phí
+        </a>
+
+    </div>
+
+</div>
+{% endblock %}
