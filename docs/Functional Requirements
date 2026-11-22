@@ -5,7 +5,7 @@ I. FUNCTIONAL REQUIREMENTS
 - The system shall verify the student's login information before granting access.
 - The system shall display an error message when the student enters an incorrect student ID or password.
 1.2. User Logout:
-- The system shall allow students to securely log out of their accounts.
+- The system shall allow students to securely log out of their accounts. 
 - The system shall terminate the current login session after logout.
 2. Course Management Requirements 
 2.1. View Course List:
