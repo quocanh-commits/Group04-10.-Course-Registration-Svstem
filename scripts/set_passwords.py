@@ -21,6 +21,6 @@ with app.app_context():
         rows = model.query.all()
         for row in rows:
             row.password_hash = new_hash
-        print(f"{model.__tablename__}: {len(rows)} tài khoản")
+        print(f"{model.__tablename__}: {len(rows)} tài khoản") 
     db.session.commit()
     print("Xong. Mật khẩu mặc định:", DEFAULT_PASSWORD)
