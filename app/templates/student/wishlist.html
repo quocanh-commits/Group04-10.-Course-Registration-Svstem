@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block content %}
@@ -7,7 +6,6 @@
     <h2>Danh sách yêu thích</h2>
 
     <table class="table table-bordered">
-
         <thead>
             <tr>
                 <th>Mã học phần</th>
@@ -19,24 +17,19 @@
             {% for item in records %}
             <tr>
                 <td>{{ item.course_id }}</td>
-
                 <td>
-                    <a href="{{ url_for(
-                        'student.delete_wishlist',
-                        course_id=item.course_id
-                    ) }}" class="btn btn-danger btn-sm">
-                        Xóa
-                    </a>
+                    <form method="post"
+                          action="{{ url_for('student.wishlist_remove', record_id=item.record_id) }}">
+                        <button class="btn btn-danger btn-sm">Xóa</button>
+                    </form>
                 </td>
             </tr>
-
             {% else %}
             <tr>
                 <td colspan="2">Chưa có học phần yêu thích.</td>
             </tr>
             {% endfor %}
         </tbody>
-
     </table>
 
 </div>
