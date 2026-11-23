@@ -81,3 +81,35 @@ class Student(User):
     def make_payment(self, amount: int | None = None, payment_id: str | None = None):
         from app.services import payment_service
         return payment_service.make_payment(self.user_id)
+
+class Lecturer(User):
+    department = db.Column(db.String(100))
+    academic_title = db.Column(db.String(50))
+    __mapper_args__ = {"polymorphic_identity": "lecturer"}
+
+    def search_course(self, keyword: str = ""):
+        from app.services import search_service
+        return search_service.search_courses(keyword)
+
+    def classes_info(self, class_id: str):
+        from app.services import class_service
+        return class_service.get_class(class_id)
+
+    def view_schedule(self):
+        from app.services import class_service
+        return class_service.get_timetable(self.user_id)[1]
+class Administrator(User):
+    admin_level = db.Column(db.String(50))
+    __mapper_args__ = {"polymorphic_identity": "admin"}
+
+    def search_course(self, keyword: str = ""):
+        from app.services import search_service
+        return search_service.search_courses(keyword)
+
+    def classes_info(self, class_id: str):
+        from app.services import class_service
+        return class_service.get_class(class_id)
+
+    def view_schedule(self):
+        from app.services import class_service
+        return class_service.get_timetable(self.user_id)[1]
