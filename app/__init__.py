@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session
 
 from config import Config
 from app.extensions import db
@@ -18,5 +18,13 @@ def create_app(config_object=Config):
     app.register_blueprint(student_bp)
     app.register_blueprint(lecturer_bp)
     app.register_blueprint(admin_bp)
+
+    @app.context_processor
+    def inject_current_term():
+        if "user_id" not in session:
+            return {}
+        from app.services import search_service
+        return {"current_term": search_service.current_term_info(),
+                "max_credits": app.config["MAX_CREDITS"]}
 
     return app

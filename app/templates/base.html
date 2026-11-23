@@ -35,6 +35,7 @@
             <a href="{{ url_for('admin.admin_curriculum') }}" class="nav-item {% if active_page == 'curriculum' %}active{% endif %}">📖 Curriculum</a>
             <a href="{{ url_for('admin.admin_assignments') }}" class="nav-item {% if active_page == 'assignments' %}active{% endif %}">👥 Teaching assignments</a>
             <a href="{{ url_for('admin.admin_accounts') }}" class="nav-item {% if active_page == 'accounts' %}active{% endif %}">🔐 Accounts</a>
+            <a href="{{ url_for('admin.admin_wishlist') }}" class="nav-item {% if active_page == 'wishlist' %}active{% endif %}">📝 Wishlist approval</a>
           {% else %}
             <a href="{{ url_for('student.course_search') }}" class="nav-item {% if active_page == 'search' %}active{% endif %}">🔍 Course search</a>
             <a href="{{ url_for('student.course_registration') }}" class="nav-item {% if active_page == 'registration' %}active{% endif %}">📑 Course registration</a>
@@ -46,9 +47,13 @@
 
         <div class="semester-card">
           <div class="sc-label">CURRENT SEMESTER</div>
-          <div class="sc-title">Semester I · 2026–2027</div>
-          <div class="sc-status">Add/drop registration is open</div>
-          <div class="sc-time">Until 17:00 · 18/09/2026</div>
+          {% if current_term %}
+            <div class="sc-title">{{ current_term.name }}</div>
+            <div class="sc-status">{{ 'Registration is open' if current_term.open else 'Registration is closed' }}</div>
+            <div class="sc-time">Maximum {{ max_credits }} credits</div>
+          {% else %}
+            <div class="sc-title">No semester</div>
+          {% endif %}
         </div>
       </div>
 
@@ -75,6 +80,14 @@
       </header>
 
       <main class="content-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, m in messages %}
+            <div class="alert-banner" style="margin-bottom:12px;{% if category == 'error' %} background:#FEF2F2; border-color:#FECACA;{% endif %}">
+              <span>{{ '⚠️' if category == 'error' else '✅' }}</span>
+              <div><p style="margin:0;{% if category == 'error' %} color:#B91C1C;{% endif %}">{{ m }}</p></div>
+            </div>
+          {% endfor %}
+        {% endwith %}
         {% block content %}{% endblock %}
       </main>
 

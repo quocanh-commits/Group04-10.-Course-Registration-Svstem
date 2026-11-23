@@ -6,28 +6,55 @@
 <div class="page-header">
   <div>
     <h1>Registration periods</h1>
-    <p>Manage enrollment windows, credit caps, and add/drop deadlines.</p>
+    <p>Create semesters and open or close registration. Only one semester can be open at a time.</p>
   </div>
+</div>
+
+<div class="card">
+  <h3 style="font-size:16px; margin-bottom:12px;">{{ 'Edit ' ~ form.term_id if form else 'New semester' }}</h3>
+  <form method="POST" action="{{ url_for('admin.save_period') }}">
+    <input type="hidden" name="term_id" value="{{ form.term_id if form else '' }}">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; align-items:end;">
+      <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Semester name</label><input class="input-control" name="semester_name" maxlength="10" placeholder="HK2 26-27" value="{{ form.semester_name if form else '' }}" required></div>
+      <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Start date</label><input class="input-control" type="date" name="start_date" value="{{ form.start_date if form else '' }}" required></div>
+      <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">End date</label><input class="input-control" type="date" name="end_date" value="{{ form.end_date if form else '' }}" required></div>
+      <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Registration opens</label><input class="input-control" type="date" name="registration_open" value="{{ form.registration_open if form else '' }}" required></div>
+      <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Registration closes</label><input class="input-control" type="date" name="registration_close" value="{{ form.registration_close if form else '' }}" required></div>
+      <div style="display:flex; gap:8px;">
+        <button type="submit" class="btn btn-primary">{{ 'Save changes' if form else 'Create semester' }}</button>
+        {% if form %}<a href="{{ url_for('admin.admin_periods') }}" class="btn btn-outline">Cancel</a>{% endif %}
+      </div>
+    </div>
+  </form>
 </div>
 
 <div class="card">
   <table class="data-table">
     <thead>
-      <tr>
-        <th>Period</th>
-        <th>Window</th>
-        <th>Credit limit</th>
-        <th>Status</th>
-      </tr>
+      <tr><th>Semester</th><th>Duration</th><th>Registration window</th><th>Classes</th><th>Status</th><th>Actions</th></tr>
     </thead>
     <tbody>
-      {% for p in periods %}
+      {% for t in terms %}
       <tr>
-        <td><strong>{{ p.name }}</strong></td>
-        <td>{{ p.window }}</td>
-        <td>Max {{ p.max_credits }} credits</td>
-        <td><span class="badge {{ 'badge-available' if p.status == 'Open' else 'badge-full' }}">{{ p.status }}</span></td>
+        <td><strong>{{ t.name }}</strong><span class="course-meta">{{ t.id }}</span></td>
+        <td>{{ t.period }}</td>
+        <td>{{ t.window }}</td>
+        <td>{{ t.classes }}</td>
+        <td><span class="badge {{ 'badge-available' if t.status == 'OPEN' else ('badge-selected' if t.status == 'PLANNED' else 'badge-full') }}">{{ t.status }}</span></td>
+        <td>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            {% if t.status == 'OPEN' %}
+              <form method="POST" action="{{ url_for('admin.close_period', term_id=t.id) }}"><button class="btn btn-outline">Close</button></form>
+            {% else %}
+              <form method="POST" action="{{ url_for('admin.open_period', term_id=t.id) }}"><button class="btn btn-primary">Open</button></form>
+            {% endif %}
+            <a class="btn btn-outline" href="{{ url_for('admin.admin_periods', edit=t.id) }}">Edit</a>
+            <form method="POST" action="{{ url_for('admin.delete_period', term_id=t.id) }}" onsubmit="return confirm('Delete {{ t.name }}?');"><button class="btn btn-danger-outline">Delete</button></form>
+          </div>
+        </td>
       </tr>
+      {% else %}
+      <tr><td colspan="6" style="text-align:center; color:#64748B; padding:28px;">No semesters yet.</td></tr>
       {% endfor %}
     </tbody>
   </table>

@@ -6,41 +6,44 @@
 <div class="page-header">
   <div>
     <h1>Admin overview</h1>
-    <p>Semester I · 2026–2027 system health and enrollment summary.</p>
+    <p>{{ stats.term_name }} system summary, read live from the database.</p>
   </div>
 </div>
 
 <div class="stats-grid-4">
   <div class="stat-card">
-    <div class="stat-title">Active students</div>
-    <div class="stat-value teal">1,840</div>
-    <div class="stat-sub">94% completed course plan</div>
+    <div class="stat-title">Students</div>
+    <div class="stat-value teal">{{ stats.students }}</div>
+    <div class="stat-sub">{{ stats.lecturers }} lecturers · {{ stats.admins }} administrators</div>
   </div>
   <div class="stat-card">
-    <div class="stat-title">Open sections</div>
-    <div class="stat-value">64</div>
-    <div class="stat-sub">Across 6 faculties</div>
+    <div class="stat-title">Class sections</div>
+    <div class="stat-value">{{ stats.classes }}</div>
+    <div class="stat-sub">in {{ stats.term_name }}</div>
   </div>
   <div class="stat-card">
-    <div class="stat-title">Lecturers assigned</div>
-    <div class="stat-value">52</div>
-    <div class="stat-sub">100% schedules verified</div>
+    <div class="stat-title">Enrollments</div>
+    <div class="stat-value">{{ stats.enrollments }}</div>
+    <div class="stat-sub">in {{ stats.term_name }}</div>
   </div>
   <div class="stat-card">
-    <div class="stat-title">Registration window</div>
-    <div class="stat-value" style="color:#059669;">Open</div>
-    <div class="stat-sub">Closes 18/09/2026</div>
+    <div class="stat-title">Registration</div>
+    <div class="stat-value" style="color:{{ '#059669' if stats.registration_open else '#64748B' }};">{{ 'Open' if stats.registration_open else 'Closed' }}</div>
+    <div class="stat-sub">{{ stats.courses }} courses in the curriculum</div>
   </div>
 </div>
 
 <div class="card">
   <h3 style="font-size:16px;">Quick management modules</h3>
-  <p style="font-size:12px; color:#64748B; margin-bottom:14px;">Navigate to configure registration periods, curriculum, teaching assignments, or accounts.</p>
+  <p style="font-size:12px; color:#64748B; margin-bottom:14px;">
+    {{ stats.pending_wishlist }} wishlist request(s) are waiting for approval.
+  </p>
   <div style="display:flex; gap:10px; flex-wrap:wrap;">
     <a href="{{ url_for('admin.admin_periods') }}" class="btn btn-primary">Registration periods</a>
     <a href="{{ url_for('admin.admin_curriculum') }}" class="btn btn-outline">Curriculum</a>
-    <a href="{{ url_for('admin.admin_assignments') }}" class="btn btn-outline">Teaching assignments</a>
+    <a href="{{ url_for('admin.admin_assignments') }}" class="btn btn-outline">Class sections</a>
     <a href="{{ url_for('admin.admin_accounts') }}" class="btn btn-outline">Accounts</a>
+    <a href="{{ url_for('admin.admin_wishlist') }}" class="btn btn-outline">Wishlist approval ({{ stats.pending_wishlist }})</a>
   </div>
 </div>
 {% endblock %}

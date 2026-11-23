@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Wishlist approval — Administrator{% endblock %}
+{% block breadcrumb %}Wishlist approval{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Course wishlist approval</h1>
+    <p>Review the courses students asked to take. Only pending requests can be decided.</p>
+  </div>
+</div>
+
+<div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+  {% for key, label in [('PENDING', 'Pending'), ('APPROVED', 'Approved'), ('REJECTED', 'Rejected'), ('ALL', 'All')] %}
+    <a class="btn {{ 'btn-primary' if key == status else 'btn-outline' }}" href="{{ url_for('admin.admin_wishlist', status=key) }}">
+      {{ label }}{% if key != 'ALL' %} ({{ counts[key] }}){% endif %}
+    </a>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <p style="font-size:12px; color:#64748B; margin-bottom:8px;">{{ records|length }} records</p>
+  <table class="data-table">
+    <thead><tr><th>Student</th><th>Course</th><th>Requested on</th><th>Status</th><th>Decision</th></tr></thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><span class="course-title">{{ r.student }}</span><span class="course-meta">{{ r.student_id }}</span></td>
+        <td><span class="course-title">{{ r.course }}</span><span class="course-meta">{{ r.course_id }} · {{ r.credits }} cr.</span></td>
+        <td>{{ r.added }}</td>
+        <td><span class="badge {{ 'badge-available' if r.status == 'APPROVED' else ('badge-selected' if r.status == 'PENDING' else 'badge-error') }}">{{ r.status }}</span></td>
+        <td>
+          {% if r.status == 'PENDING' %}
+          <div style="display:flex; gap:6px;">
+            <form method="POST" action="{{ url_for('admin.review_wishlist', record_id=r.id, decision='approved') }}"><input type="hidden" name="status" value="{{ status }}"><button class="btn btn-primary">Approve</button></form>
+            <form method="POST" action="{{ url_for('admin.review_wishlist', record_id=r.id, decision='rejected') }}"><input type="hidden" name="status" value="{{ status }}"><button class="btn btn-danger-outline">Reject</button></form>
+          </div>
+          {% else %}<span class="course-meta">Reviewed</span>{% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" style="text-align:center; color:#64748B; padding:28px;">Nothing to show.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
