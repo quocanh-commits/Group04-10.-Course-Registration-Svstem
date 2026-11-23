@@ -1,42 +1,45 @@
 {% extends "base.html" %}
-{% block title %}Timetable — Register{% endblock %}
+{% block title %}Timetable · Register{% endblock %}
 {% block breadcrumb %}Timetable{% endblock %}
 
 {% block content %}
+{% from "_macros.html" import day_name %}
+
 <div class="page-header">
   <div>
-    <h1>Weekly timetable</h1>
-    <p>{{ term.name if term else '' }} · weekly class schedule.</p>
+    <h1>Timetable</h1>
+    <p>Your weekly class schedule.</p>
   </div>
+  {% if term %}<span class="term-badge">{{ term.name }}</span>{% endif %}
+</div>
+
+<div class="stat-row">
+  <div class="stat"><span class="stat-label">Classes</span><span class="stat-value">{{ enrollments|length }}</span></div>
+  <div class="stat"><span class="stat-label">Credits</span>
+    <span class="stat-value">{{ enrollments | sum(attribute='class_section.course.credits') }}</span></div>
 </div>
 
 <div class="card">
-  <h3 style="font-size:16px;">Registered classes schedule</h3>
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>Class</th>
-        <th>Course name</th>  
-        <th>Time slot</th>
-        <th>Room</th>
-        <th>Lecturer</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for c in classes %}
-      <tr>
-        <td><strong>{{ c.class_id }}</strong></td>
-        <td><span class="course-title">{{ c.name }}</span><span class="course-meta">{{ c.course_id }} · {{ c.credits }} credits</span></td>
-        <td>{{ c.schedule }}</td>
-        <td>{{ c.room }}</td>
-        <td>{{ c.lecturer }}</td>
-      </tr>
-      {% else %}
-      <tr>
-        <td colspan="5" style="text-align:center; color:#64748B; padding:28px;">No registered classes yet.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th>Day</th><th>Periods</th><th>Class</th><th>Course</th><th>Room</th><th>Lecturer</th></tr>
+      </thead>
+      <tbody>
+        {% for e in enrollments %}{% set c = e.class_section %}
+        <tr>
+          <td>{{ day_name(c.day_of_week) }}</td>
+          <td>{{ c.start_period }}-{{ c.end_period }}</td>
+          <td>{{ c.class_id }}</td>
+          <td>{{ c.course.name }}</td>
+          <td>{{ c.room }}</td>
+          <td>{{ c.lecturer.full_name if c.lecturer else 'TBA' }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty">No classes scheduled.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}
