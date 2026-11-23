@@ -1,16 +1,23 @@
 from app.extensions import db
 
+class ClassSection(db.Model):
+    __tablename__ = "class_sections"
 
-class Enrollment(db.Model):
-    __tablename__ = "enrollment"
+    class_id = db.Column(db.String(30), primary_key=True)
+    course_id = db.Column(db.String(20), db.ForeignKey("courses.course_id"), nullable=False)
+    term_id = db.Column(db.Integer, db.ForeignKey("registration_terms.term_id"), nullable=False)
+    lecturer_id = db.Column(db.String(20), db.ForeignKey("users.user_id"))
+    room = db.Column(db.String(30))
+    day_of_week = db.Column(db.Integer, nullable=False)       # 2..8
+    start_period = db.Column(db.Integer, nullable=False)
+    end_period = db.Column(db.Integer, nullable=False)
+    capacity = db.Column(db.Integer, nullable=False, default=50)
 
-    id = db.Column("enrollmentid", db.String(5), primary_key=True)
-    enrolled_at = db.Column("enrolledat", db.Date, nullable=False)
-    status = db.Column("status", db.String(100), nullable=False)
-    mid_term_grade = db.Column("midtermgrade", db.Float)   # NULL cho tới khi giảng viên nhập
-    final_grade = db.Column("finalgrade", db.Float)
-    class_id = db.Column("classid", db.String(5), db.ForeignKey("classsection.classid"), nullable=False)
-    student_id = db.Column("studentid", db.String(5), db.ForeignKey("student.studentid"), nullable=False)
+    course = db.relationship("Course")
+    term = db.relationship("RegistrationTerm")
+    lecturer = db.relationship("User", foreign_keys=[lecturer_id])
 
-    class_section = db.relationship("ClassSection", back_populates="enrollments")
-    student = db.relationship("Student")
+    def conflicts_with(self, other: "ClassSection") -> bool:
+        return (self.term_id == other.term_id and self.day_of_week == other.day_of_week
+                and self.start_period <= other.end_period
+                and other.start_period <= self.end_period)
