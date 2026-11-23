@@ -1,15 +1,19 @@
+from datetime import date
 from app.extensions import db
 
-
 class WishlistRecord(db.Model):
-    """Cần chạy migration 001 (đổi whistListId thành wishlistId) trước khi dùng."""
-    __tablename__ = "wishlistrecord"
+    __tablename__ = "wishlist_records"
+    __table_args__ = (db.UniqueConstraint("student_id", "course_id"),)
 
-    id = db.Column("wishlistid", db.Integer, primary_key=True)
-    added_date = db.Column("addeddate", db.Date, nullable=False)
-    approval_status = db.Column("approvalstatus", db.String(100), nullable=False)
-    student_id = db.Column("studentid", db.String(5), db.ForeignKey("student.studentid"), nullable=False)
-    course_id = db.Column("courseid", db.String(5), db.ForeignKey("course.courseid"), nullable=False)
-
-    student = db.relationship("Student")
+    record_id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.String(20), db.ForeignKey("users.user_id"), nullable=False)
+    course_id = db.Column(db.String(20), db.ForeignKey("courses.course_id"), nullable=False)
+    added_date = db.Column(db.Date, default=date.today)                             
+    approval_status = db.Column(db.String(10), nullable=False, default="DRAFT")     
     course = db.relationship("Course")
+
+    def request_approval(self) -> bool:
+        if self.approval_status not in ("DRAFT", "REJECTED"):
+            return False
+        self.approval_status = "PENDING"
+        return True
