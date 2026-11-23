@@ -8,7 +8,7 @@
     <h1>Class sections &amp; teaching assignments</h1>
     <p>Open sections from curriculum courses and assign lecturer, room, schedule and capacity.</p>
   </div>
-  <form method="GET">
+  <form method="GET"> 
     <select name="term" class="input-control" style="width:220px;" onchange="this.form.submit()">
       {% for t in terms %}
         <option value="{{ t.id }}" {% if t.id == term_id %}selected{% endif %}>{{ t.name }} · {{ t.status }}</option>
