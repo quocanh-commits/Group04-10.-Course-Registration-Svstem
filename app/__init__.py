@@ -9,6 +9,10 @@ def create_app(config_object=Config):
     db.init_app(app)
 
     from app import models  # noqa: F401  (đăng ký model với SQLAlchemy)
+
+    from app.integrations.mock_billing_system import MockBillingSystem
+    app.extensions["billing_system"] = MockBillingSystem()
+
     from app.routes.auth_routes import auth_bp
     from app.routes.student_routes import student_bp
     from app.routes.lecturer_routes import lecturer_bp
