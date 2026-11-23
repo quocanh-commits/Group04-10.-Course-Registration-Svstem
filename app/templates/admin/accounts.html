@@ -6,28 +6,70 @@
 <div class="page-header">
   <div>
     <h1>User accounts</h1>
-    <p>Manage Student, Lecturer, and Administrator portal accounts.</p>
+    <p>Create, edit, reset and delete Student, Lecturer and Administrator accounts.</p>
   </div>
 </div>
 
+<div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+  {% for key, label in role_labels.items() %}
+    <a class="btn {{ 'btn-primary' if key == role else 'btn-outline' }}" href="{{ url_for('admin.admin_accounts', role=key) }}">{{ label }}s</a>
+  {% endfor %}
+</div>
+
 <div class="card">
+  <h3 style="font-size:16px; margin-bottom:12px;">{{ 'Edit ' ~ form.user_id if form else 'New ' ~ role_labels[role]|lower ~ ' account' }}</h3>
+  <form method="POST" action="{{ url_for('admin.save_account') }}">
+    <input type="hidden" name="role" value="{{ role }}">
+    <input type="hidden" name="user_id" value="{{ form.user_id if form else '' }}">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; align-items:end;">
+      <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Full name</label><input class="input-control" name="full_name" maxlength="50" value="{{ form.full_name if form else '' }}" required></div>
+      <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Email</label><input class="input-control" type="email" name="email" maxlength="100" value="{{ form.email if form else '' }}" required></div>
+      <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Date of birth</label><input class="input-control" type="date" name="date_of_birth" value="{{ form.date_of_birth if form else '' }}" required></div>
+      {% if role == 'student' %}
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Major</label><input class="input-control" name="major" maxlength="100" value="{{ form.major if form else '' }}" required></div>
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Enrollment year</label><input class="input-control" type="number" name="enrollment_year" min="2000" value="{{ form.enrollment_year if form else '' }}" required></div>
+      {% elif role == 'lecturer' %}
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Department</label><input class="input-control" name="department" maxlength="100" value="{{ form.department if form else '' }}" required></div>
+      {% else %}
+        <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Administrator role</label><input class="input-control" name="admin_role" maxlength="100" value="{{ form.admin_role if form else '' }}" required></div>
+      {% endif %}
+      <div style="display:flex; gap:8px;">
+        <button type="submit" class="btn btn-primary">{{ 'Save changes' if form else 'Create account' }}</button>
+        {% if form %}<a href="{{ url_for('admin.admin_accounts', role=role) }}" class="btn btn-outline">Cancel</a>{% endif %}
+      </div>
+    </div>
+    {% if not form %}<p style="font-size:12px; color:#64748B; margin-top:10px;">The account code is generated automatically. The initial password is the default password; the user should change it after signing in.</p>{% endif %}
+  </form>
+</div>
+
+<div class="card">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+    <p style="font-size:12px; color:#64748B;">{{ accounts|length }} accounts</p>
+    <form method="GET" style="display:flex; gap:8px;">
+      <input type="hidden" name="role" value="{{ role }}">
+      <input class="input-control" name="q" placeholder="Search code, name or email" value="{{ keyword }}">
+      <button class="btn btn-outline">Search</button>
+    </form>
+  </div>
   <table class="data-table">
-    <thead>
-      <tr>
-        <th>Username / ID</th>
-        <th>Full name</th>
-        <th>Role</th>
-        <th>Status</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Code</th><th>Full name</th><th>Email / Birth date</th><th>Details</th><th>Actions</th></tr></thead>
     <tbody>
-      {% for acc in accounts %}
+      {% for a in accounts %}
       <tr>
-        <td><strong>{{ acc.username }}</strong></td>
-        <td>{{ acc.name }}</td>
-        <td><span class="badge badge-selected">{{ acc.role }}</span></td>
-        <td><span class="badge badge-available">{{ acc.status }}</span></td>
+        <td><strong>{{ a.id }}</strong></td>
+        <td>{{ a.name }}</td>
+        <td>{{ a.email }}<span class="course-meta">{{ a.dob }}</span></td>
+        <td>{{ a.detail }}</td>
+        <td>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <a class="btn btn-outline" href="{{ url_for('admin.admin_accounts', role=role, edit=a.id) }}">Edit</a>
+            <form method="POST" action="{{ url_for('admin.reset_account_password', role=role, user_id=a.id) }}" onsubmit="return confirm('Reset the password of {{ a.id }}?');"><button class="btn btn-outline">Reset password</button></form>
+            <form method="POST" action="{{ url_for('admin.delete_account', role=role, user_id=a.id) }}" onsubmit="return confirm('Delete account {{ a.id }}?');"><button class="btn btn-danger-outline">Delete</button></form>
+          </div>
+        </td>
       </tr>
+      {% else %}
+      <tr><td colspan="5" style="text-align:center; color:#64748B; padding:28px;">No accounts found.</td></tr>
       {% endfor %}
     </tbody>
   </table>

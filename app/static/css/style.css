@@ -659,3 +659,4 @@ body {
   font-size: 12px;
   color: var(--text-muted);
 }
+.badge-registered { background: #DBEAFE; color: #1D4ED8; }

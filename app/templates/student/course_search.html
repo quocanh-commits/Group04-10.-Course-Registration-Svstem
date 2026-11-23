@@ -9,27 +9,32 @@
     <p>Find classes that fit your degree plan and schedule.</p>
   </div>
   <select class="input-control" style="width: 210px;">
-    <option>Semester I · 2026–2027</option>
+    <option>{{ term.name if term else 'No semester' }}</option>
   </select>
 </div>
 
 <div class="alert-banner">
   <span>ℹ️</span>
   <div>
-    <h4>Add/drop registration is open</h4>
-    <p>07/09–18/09/2026 · Maximum 24 credits · Check schedules and prerequisites before selecting classes.</p>
+    {% if registration_open %}
+      <h4>Registration is open</h4>
+      <p>{{ term.name }} · Maximum {{ max_credits }} credits · Selecting a class only saves it temporarily. Press Confirm on the registration page to enroll.</p>
+    {% else %}
+      <h4>Registration is closed</h4>
+      <p>You can browse classes, but selecting is disabled until registration opens.</p>
+    {% endif %}
   </div>
 </div>
 
 <!-- Bộ lọc tìm kiếm -->
 <div class="card">
   <h3 style="font-size:16px;">Find course sections</h3>
-  <p style="font-size:12px; color:#64748B;">Class information reflects the selected semester.</p>
+  <p style="font-size:12px; color:#64748B;">Class information reflects the current semester.</p>
 
   <form method="GET" class="filter-grid">
     <div>
-      <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Course name / Code</label>
-      <input type="text" name="q" class="input-control" placeholder="Search course name or code" value="{{ request.args.get('q', '') }}">
+      <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Course / Class / Lecturer</label>
+      <input type="text" name="q" class="input-control" placeholder="Search course name, code or lecturer" value="{{ request.args.get('q', '') }}">
     </div>
     <div>
       <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Faculty</label>
@@ -40,15 +45,18 @@
     <div>
       <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Credits</label>
       <select name="credits" class="input-control">
-        <option>All</option>
-        <option>3</option>
+        <option value="">All</option>
+        {% for cr in credit_options %}
+          <option value="{{ cr }}" {% if selected_credits == cr %}selected{% endif %}>{{ cr }}</option>
+        {% endfor %}
       </select>
     </div>
     <div>
       <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Class status</label>
       <select name="status" class="input-control">
-        <option>All statuses</option>
-        <option>Available</option>
+        {% for s in ['All statuses', 'Available', 'Selected', 'Registered', 'Full'] %}
+          <option {% if selected_status == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
       </select>
     </div>
     <button type="submit" class="btn btn-primary">🔍 Search</button>
@@ -60,7 +68,7 @@
   <div style="display:flex; justify-content:space-between; align-items:center;">
     <div>
       <h3 style="font-size:16px;">Search results</h3>
-      <p style="font-size:12px; color:#64748B;">{{ courses|length }} course sections · Faculty of IT</p>
+      <p style="font-size:12px; color:#64748B;">{{ courses|length }} course sections</p>
     </div>
     <a href="{{ url_for('student.course_registration') }}" class="btn btn-outline">📑 {{ selected_count }} classes selected</a>
   </div>
@@ -72,7 +80,6 @@
         <th>Cr.</th>
         <th>Schedule / Room</th>
         <th>Enrollment</th>
-        <th>Prerequisite</th>
         <th>Status</th>
         <th>Actions</th>
       </tr>
@@ -82,39 +89,41 @@
       <tr>
         <td>
           <span class="course-title">{{ c.name }}</span>
-          <span class="course-meta">{{ c.code }} · {{ c.lecturer }}</span>
+          <span class="course-meta">{{ c.course_id }} · {{ c.class_id }} · {{ c.lecturer }}</span>
         </td>
         <td>{{ c.credits }}</td>
         <td>
           <span class="course-title" style="font-weight:500;">{{ c.schedule }}</span>
-          <span class="course-meta">{{ c.room }} · Weeks 1–15</span>
+          <span class="course-meta">{{ c.room }}</span>
         </td>
         <td>
           <span class="course-title" style="font-weight:500;">{{ c.enrolled }}/{{ c.capacity }}</span>
           <span class="course-meta">{{ 'Full' if c.enrolled >= c.capacity else (c.capacity - c.enrolled)|string + ' seats left' }}</span>
         </td>
         <td>
-          <span class="course-title" style="font-weight:500; color:{{ '#059669' if c.prereq_ok else '#DC2626' }};">{{ c.prereq }}</span>
-          <span class="course-meta">{{ 'Eligible' if c.prereq_ok else 'Complete prerequisite first' }}</span>
-        </td>
-        <td>
           {% if c.status == 'Available' %}
             <span class="badge badge-available">Available</span>
           {% elif c.status == 'Full' %}
             <span class="badge badge-full">Full</span>
+          {% elif c.status == 'Registered' %}
+            <span class="badge badge-registered">Registered</span>
           {% else %}
             <span class="badge badge-selected">Selected</span>
           {% endif %}
         </td>
         <td>
-          {% if c.status == 'Available' %}
-            <form method="POST" action="{{ url_for('student.select_course', code=c.code) }}">
+          {% if c.status == 'Available' and registration_open %}
+            <form method="POST" action="{{ url_for('student.select_course', class_id=c.class_id) }}">
               <button type="submit" class="btn btn-outline">Select class</button>
             </form>
           {% else %}
-            <button class="btn btn-disabled" disabled>{{ c.status }}</button>
+            <button class="btn btn-disabled" disabled>{{ c.status if c.status != 'Available' else 'Closed' }}</button>
           {% endif %}
         </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" style="text-align:center; color:#64748B; padding:28px;">No classes found.</td>
       </tr>
       {% endfor %}
     </tbody>

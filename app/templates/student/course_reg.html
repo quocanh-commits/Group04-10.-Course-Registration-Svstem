@@ -13,26 +13,34 @@
 
 <div class="stats-grid-3">
   <div class="stat-card">
-    <div class="stat-title">Enrolled credits</div>
-    <div class="stat-value teal">{{ total_credits }} / 24</div>
-    <div class="stat-sub">{{ selected_courses|length }} classes in current plan</div>
+    <div class="stat-title">Credits in plan</div>
+    <div class="stat-value teal">{{ total_credits }} / {{ max_credits }}</div>
+    <div class="stat-sub">{{ registered_rows|length }} registered + {{ cart_rows|length }} selected</div>
   </div>
   <div class="stat-card">
     <div class="stat-title">Estimated tuition</div>
     <div class="stat-value">{{ "{:,}".format(total_tuition).replace(",", ".") }} ₫</div>
-    <div class="stat-sub">Based on 1.250.000 ₫ / credit</div>
+    <div class="stat-sub">Based on {{ "{:,}".format(tuition_per_credit).replace(",", ".") }} ₫ / credit</div>
   </div>
   <div class="stat-card">
-    <div class="stat-title">Schedule & prerequisite check</div>
-    <div class="stat-value" style="color:#059669;">{{ 'Ready to submit' if all_valid else 'Action required' }}</div>
-    <div class="stat-sub">{{ 'No conflicts detected' if all_valid else 'Check prerequisite / schedule warnings' }}</div>
+    <div class="stat-title">Schedule & credit check</div>
+    {% if not cart_rows %}
+      <div class="stat-value" style="color:#64748B;">Nothing to submit</div>
+      <div class="stat-sub">Select classes first</div>
+    {% elif all_valid %}
+      <div class="stat-value" style="color:#059669;">Ready to submit</div>
+      <div class="stat-sub">No conflicts detected</div>
+    {% else %}
+      <div class="stat-value" style="color:#DC2626;">Action required</div>
+      <div class="stat-sub">{{ global_problems[0] if global_problems else 'Check the warnings below' }}</div>
+    {% endif %}
   </div>
 </div>
 
 <div class="workspace-split">
   <div class="card">
     <h3 style="font-size:16px; margin-bottom:4px;">Selected course sections</h3>
-    <p style="font-size:12px; color:#64748B;">Manage classes before finalizing semester registration.</p>
+    <p style="font-size:12px; color:#64748B;">Not saved yet. Press Confirm to enroll in these classes.</p>
 
     <table class="data-table">
       <thead>
@@ -45,11 +53,11 @@
         </tr>
       </thead>
       <tbody>
-        {% for c in selected_courses %}
+        {% for c in cart_rows %}
         <tr>
           <td>
             <span class="course-title">{{ c.name }}</span>
-            <span class="course-meta">{{ c.code }} · {{ c.lecturer }}</span>
+            <span class="course-meta">{{ c.course_id }} · {{ c.class_id }} · {{ c.lecturer }}</span>
           </td>
           <td>{{ c.credits }}</td>
           <td>
@@ -57,21 +65,63 @@
             <span class="course-meta">{{ c.room }}</span>
           </td>
           <td>
-            {% if c.prereq_ok %}
+            {% if c.ok %}
               <span class="badge badge-available">Valid</span>
             {% else %}
-              <span class="badge badge-error">Prereq missing</span>
+              <span class="badge badge-error">Not valid</span>
+              <span class="course-meta">{{ c.problems|join('; ') }}</span>
             {% endif %}
           </td>
           <td>
-            <form method="POST" action="{{ url_for('student.drop_course', code=c.code) }}">
-              <button type="submit" class="btn btn-danger-outline">Drop</button>
+            <form method="POST" action="{{ url_for('student.drop_course', class_id=c.class_id) }}">
+              <button type="submit" class="btn btn-danger-outline">Remove</button>
             </form>
           </td>
         </tr>
         {% else %}
         <tr>
-          <td colspan="5" style="text-align:center; color:#64748B; padding:28px;">No courses selected yet.</td>
+          <td colspan="5" style="text-align:center; color:#64748B; padding:28px;">No classes selected yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <h3 style="font-size:16px; margin:24px 0 4px;">Registered course sections</h3>
+    <p style="font-size:12px; color:#64748B;">Already saved in your enrollment for {{ term.name if term else '' }}.</p>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Course / Section</th>
+          <th>Cr.</th>
+          <th>Schedule / Room</th>
+          <th>Status</th>
+          <th>Cancel</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in registered_rows %}
+        <tr>
+          <td>
+            <span class="course-title">{{ c.name }}</span>
+            <span class="course-meta">{{ c.course_id }} · {{ c.class_id }} · {{ c.lecturer }}</span>
+          </td>
+          <td>{{ c.credits }}</td>
+          <td>
+            <span class="course-title" style="font-weight:500;">{{ c.schedule }}</span>
+            <span class="course-meta">{{ c.room }}</span>
+          </td>
+          <td><span class="badge badge-registered">Registered</span></td>
+          <td>
+            <form method="POST" action="{{ url_for('student.cancel_registration', class_id=c.class_id) }}"
+                  onsubmit="return confirm('Cancel registration for {{ c.name }}?');">
+              <button type="submit" class="btn btn-danger-outline">Cancel</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5" style="text-align:center; color:#64748B; padding:28px;">No registered classes yet.</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -81,8 +131,12 @@
   <div class="card">
     <h3 style="font-size:16px; margin-bottom:12px;">Registration summary</h3>
     <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
+      <span style="color:#64748B;">Registered classes:</span>
+      <strong>{{ registered_rows|length }}</strong>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
       <span style="color:#64748B;">Selected classes:</span>
-      <strong>{{ selected_courses|length }}</strong>
+      <strong>{{ cart_rows|length }}</strong>
     </div>
     <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:13px;">
       <span style="color:#64748B;">Total credits:</span>
@@ -92,17 +146,16 @@
       <span style="color:#64748B;">Tuition fee:</span>
       <strong>{{ "{:,}".format(total_tuition).replace(",", ".") }} ₫</strong>
     </div>
+    {% for g in global_problems %}
+      <p style="font-size:12px; color:#B91C1C; margin-bottom:10px;">⚠️ {{ g }}</p>
+    {% endfor %}
     <form method="POST" action="{{ url_for('student.confirm_registration') }}">
-      <button type="submit" class="btn btn-primary btn-block">Confirm registration ✓</button>
+      {% if all_valid %}
+        <button type="submit" class="btn btn-primary btn-block">Confirm registration ✓</button>
+      {% else %}
+        <button type="button" class="btn btn-disabled btn-block" disabled>Confirm registration ✓</button>
+      {% endif %}
     </form>
-    {% if confirmed_msg %}
-      <div class="alert-banner" style="margin-top:14px; margin-bottom:0;">
-        <div>
-          <h4>Enrollment confirmed</h4>
-          <p>{{ confirmed_msg }}</p>
-        </div>
-      </div>
-    {% endif %}
   </div>
 </div>
 {% endblock %}

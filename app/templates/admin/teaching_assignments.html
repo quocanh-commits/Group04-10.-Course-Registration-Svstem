@@ -1,35 +1,86 @@
 {% extends "base.html" %}
-{% block title %}Teaching assignments — Administrator{% endblock %}
-{% block breadcrumb %}Teaching assignments{% endblock %}
+{% block title %}Class sections — Administrator{% endblock %}
+{% block breadcrumb %}Class sections{% endblock %}
 
 {% block content %}
 <div class="page-header">
   <div>
-    <h1>Teaching assignments</h1>
-    <p>Assign lecturers, classrooms, and time slots to course sections.</p>
+    <h1>Class sections &amp; teaching assignments</h1>
+    <p>Open sections from curriculum courses and assign lecturer, room, schedule and capacity.</p>
   </div>
+  <form method="GET">
+    <select name="term" class="input-control" style="width:220px;" onchange="this.form.submit()">
+      {% for t in terms %}
+        <option value="{{ t.id }}" {% if t.id == term_id %}selected{% endif %}>{{ t.name }} · {{ t.status }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+{% if term_id %}
+<div class="card">
+  <h3 style="font-size:16px; margin-bottom:12px;">{{ 'Edit ' ~ form.class_id if form else 'New class section' }}</h3>
+  <form method="POST" action="{{ url_for('admin.save_class') }}">
+    <input type="hidden" name="class_id" value="{{ form.class_id if form else '' }}">
+    <input type="hidden" name="term_id" value="{{ form.term_id if form else term_id }}">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; align-items:end;">
+      <div style="grid-column: span 2;">
+        <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Course</label>
+        {% if form %}
+          <input class="input-control" value="{{ form.course_id }} · {{ form.course_title }}" disabled>
+        {% else %}
+          <select class="input-control" name="course_id" required>
+            <option value="">Choose a course</option>
+            {% for c in courses %}<option value="{{ c.id }}">{{ c.id }} · {{ c.title }} ({{ c.credits }} cr.)</option>{% endfor %}
+          </select>
+        {% endif %}
+      </div>
+      <div style="grid-column: span 2;">
+        <label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Lecturer</label>
+        <select class="input-control" name="lecturer_id" required>
+          <option value="">Choose a lecturer</option>
+          {% for l in lecturers %}<option value="{{ l.id }}" {% if form and form.lecturer_id == l.id %}selected{% endif %}>{{ l.id }} · {{ l.name }}</option>{% endfor %}
+        </select>
+      </div>
+      <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Room</label><input class="input-control" name="room" maxlength="4" placeholder="B401" value="{{ form.room if form else '' }}" required></div>
+      <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Capacity</label><input class="input-control" type="number" name="capacity" min="1" max="500" value="{{ form.capacity if form else 45 }}" required></div>
+      <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">First session (date &amp; time)</label><input class="input-control" type="datetime-local" name="schedule_time" value="{{ form.schedule_time if form else '' }}" required></div>
+      <div style="display:flex; gap:8px;">
+        <button type="submit" class="btn btn-primary">{{ 'Save changes' if form else 'Create section' }}</button>
+        {% if form %}<a href="{{ url_for('admin.admin_assignments', term=term_id) }}" class="btn btn-outline">Cancel</a>{% endif %}
+      </div>
+    </div>
+  </form>
 </div>
 
 <div class="card">
+  <p style="font-size:12px; color:#64748B; margin-bottom:8px;">{{ classes|length }} class sections</p>
   <table class="data-table">
-    <thead>
-      <tr>
-        <th>Section</th>
-        <th>Course</th>
-        <th>Lecturer</th>
-        <th>Room / Schedule</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Section</th><th>Lecturer</th><th>First session / Room</th><th>Enrollment</th><th>Actions</th></tr></thead>
     <tbody>
-      {% for cls in classes %}
+      {% for c in classes %}
       <tr>
-        <td><strong>{{ cls.code }}</strong></td>
-        <td>{{ cls.name }}</td>
-        <td>{{ cls.lecturer }}</td>
-        <td>{{ cls.room }} · {{ cls.schedule }}</td>
+        <td><span class="course-title">{{ c.title }}</span><span class="course-meta">{{ c.id }} · {{ c.course_id }} · {{ c.credits }} cr.</span></td>
+        <td>{{ c.lecturer }}<span class="course-meta">{{ c.lecturer_id }}</span></td>
+        <td>{{ c.schedule }}<span class="course-meta">Room {{ c.room }}</span></td>
+        <td>{{ c.enrolled }}/{{ c.capacity }}</td>
+        <td>
+          <div style="display:flex; gap:6px;">
+            <a class="btn btn-outline" href="{{ url_for('admin.admin_assignments', term=term_id, edit=c.id) }}">Edit</a>
+            <form method="POST" action="{{ url_for('admin.delete_class', class_id=c.id) }}" onsubmit="return confirm('Delete section {{ c.id }}?');">
+              <input type="hidden" name="term_id" value="{{ term_id }}">
+              <button class="btn btn-danger-outline">Delete</button>
+            </form>
+          </div>
+        </td>
       </tr>
+      {% else %}
+      <tr><td colspan="5" style="text-align:center; color:#64748B; padding:28px;">No class sections in this semester.</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+{% else %}
+<div class="card"><p>Create a semester first on the Registration periods page.</p></div>
+{% endif %}
 {% endblock %}

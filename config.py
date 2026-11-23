@@ -11,3 +11,4 @@ class Config:
 
     MAX_CREDITS = 24
     TUITION_PER_CREDIT = 1250000
+    DEFAULT_PASSWORD = "123456"      # mật khẩu ban đầu khi admin tạo hoặc đặt lại tài khoản

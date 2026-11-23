@@ -5,29 +5,46 @@
 {% block content %}
 <div class="page-header">
   <div>
-    <h1>Curriculum & courses</h1>
-    <p>Catalog of degree courses, credit weights, and prerequisites.</p>
+    <h1>Curriculum courses</h1>
+    <p>Create and maintain the courses that class sections are opened from.</p>
   </div>
 </div>
 
 <div class="card">
+  <h3 style="font-size:16px; margin-bottom:12px;">{{ 'Edit ' ~ form.course_id if form else 'New course' }}</h3>
+  <form method="POST" action="{{ url_for('admin.save_course') }}">
+    <input type="hidden" name="course_id" value="{{ form.course_id if form else '' }}">
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; align-items:end;">
+      <div style="grid-column: span 2;"><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Course title</label><input class="input-control" name="title" maxlength="100" value="{{ form.title if form else '' }}" required></div>
+      <div><label style="font-size:12px; font-weight:600; display:block; margin-bottom:6px;">Credits</label><input class="input-control" type="number" name="credits" min="1" max="15" value="{{ form.credits if form else '' }}" required></div>
+      <div style="display:flex; gap:8px;">
+        <button type="submit" class="btn btn-primary">{{ 'Save changes' if form else 'Create course' }}</button>
+        {% if form %}<a href="{{ url_for('admin.admin_curriculum') }}" class="btn btn-outline">Cancel</a>{% endif %}
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="card">
+  <p style="font-size:12px; color:#64748B; margin-bottom:8px;">{{ courses|length }} courses</p>
   <table class="data-table">
-    <thead>
-      <tr>
-        <th>Code</th>
-        <th>Course title</th>
-        <th>Credits</th>
-        <th>Prerequisite</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Code</th><th>Title</th><th>Credits</th><th>Class sections</th><th>Actions</th></tr></thead>
     <tbody>
       {% for c in courses %}
       <tr>
-        <td><strong>{{ c.code }}</strong></td>
-        <td>{{ c.name }}</td>
+        <td><strong>{{ c.id }}</strong></td>
+        <td>{{ c.title }}</td>
         <td>{{ c.credits }}</td>
-        <td>{{ c.prereq }}</td>
+        <td>{{ c.classes }}</td>
+        <td>
+          <div style="display:flex; gap:6px;">
+            <a class="btn btn-outline" href="{{ url_for('admin.admin_curriculum', edit=c.id) }}">Edit</a>
+            <form method="POST" action="{{ url_for('admin.delete_course', course_id=c.id) }}" onsubmit="return confirm('Delete {{ c.title }}?');"><button class="btn btn-danger-outline">Delete</button></form>
+          </div>
+        </td>
       </tr>
+      {% else %}
+      <tr><td colspan="5" style="text-align:center; color:#64748B; padding:28px;">No courses yet.</td></tr>
       {% endfor %}
     </tbody>
   </table>
