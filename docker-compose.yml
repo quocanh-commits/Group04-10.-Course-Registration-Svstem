@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: course_reg_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: register_portal
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: course_reg_web
+    restart: always
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      # Ghi đè host database trỏ tới tên service 'db' trong Docker network
+      DATABASE_URL: postgresql://postgres:your_password@db:5432/register_portal
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
