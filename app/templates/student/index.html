@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 {% block content %}
@@ -8,9 +7,14 @@
 
     <div class="list-group mt-3">
 
-        <a href="{{ url_for('student.courses') }}"
+        <a href="{{ url_for('student.course_search') }}"
            class="list-group-item list-group-item-action">
-            Tìm kiếm và đăng ký học phần
+            Tìm kiếm học phần
+        </a>
+
+        <a href="{{ url_for('student.course_reg') }}"
+           class="list-group-item list-group-item-action">
+            Đăng ký lớp học phần
         </a>
 
         <a href="{{ url_for('student.wishlist') }}"
