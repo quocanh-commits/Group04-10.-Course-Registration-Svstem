@@ -11,7 +11,7 @@
 </div>
 
 <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
-  {% for key, label in [('PENDING', 'Pending'), ('APPROVED', 'Approved'), ('REJECTED', 'Rejected'), ('ALL', 'All')] %}
+  {% for key, label in [('PENDING', 'Pending'), ('APPROVED', 'Approved'), ('REJECTED', 'Rejected'), ('ALL', 'All')] %} 
     <a class="btn {{ 'btn-primary' if key == status else 'btn-outline' }}" href="{{ url_for('admin.admin_wishlist', status=key) }}">
       {{ label }}{% if key != 'ALL' %} ({{ counts[key] }}){% endif %}
     </a>
