@@ -1,43 +1,32 @@
 {% extends "base.html" %}
+{% block title %}Student home · Register{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="page-header">
+  <div>
+    <h1>Welcome, {{ session.get('full_name') }}</h1>
+    <p>{% if current_term %}Current semester: {{ current_term.name }}{% else %}No semester available.{% endif %}</p>
+  </div>
+</div>
 
-    <h2>Trang sinh viên</h2>
-
-    <div class="list-group mt-3">
-
-        <a href="{{ url_for('student.course_search') }}"
-           class="list-group-item list-group-item-action">
-            Tìm kiếm học phần
-        </a>
-
-        <a href="{{ url_for('student.course_reg') }}"
-           class="list-group-item list-group-item-action">
-            Đăng ký lớp học phần
-        </a>
-
-        <a href="{{ url_for('student.wishlist') }}"
-           class="list-group-item list-group-item-action">
-            Danh sách yêu thích
-        </a>
-
-        <a href="{{ url_for('student.timetable') }}"
-           class="list-group-item list-group-item-action">
-            Thời khóa biểu
-        </a>
-
-        <a href="{{ url_for('student.results') }}"
-           class="list-group-item list-group-item-action">
-            Kết quả học tập
-        </a>
-
-        <a href="{{ url_for('student.tuition') }}"
-           class="list-group-item list-group-item-action">
-            Thông tin học phí
-        </a>
-
-    </div>
-
+<div class="tile-grid">
+  <a class="tile" href="{{ url_for('student.course_search') }}">
+    <h3>Course search</h3><p>Browse class sections and filter by credits or status.</p>
+  </a>
+  <a class="tile" href="{{ url_for('student.course_reg') }}">
+    <h3>Class registration</h3><p>Register for or cancel classes in the open term.</p>
+  </a>
+  <a class="tile" href="{{ url_for('student.wishlist') }}">
+    <h3>Wishlist</h3><p>Courses you plan to take and their approval status.</p>
+  </a>
+  <a class="tile" href="{{ url_for('student.timetable') }}">
+    <h3>Timetable</h3><p>Your weekly class schedule.</p>
+  </a>
+  <a class="tile" href="{{ url_for('student.results') }}">
+    <h3>Academic results</h3><p>Grades and GPA.</p>
+  </a>
+  <a class="tile" href="{{ url_for('student.tuition') }}">
+    <h3>Tuition</h3><p>Balance due and payment history.</p>
+  </a>
 </div>
 {% endblock %}
