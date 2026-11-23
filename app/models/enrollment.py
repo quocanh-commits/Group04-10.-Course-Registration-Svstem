@@ -1,23 +1,17 @@
+from datetime import datetime
+
 from app.extensions import db
 
-class ClassSection(db.Model):
-    __tablename__ = "class_sections"
+class Enrollment(db.Model):
+    __tablename__ = "enrollments"
+    __table_args__ = (db.UniqueConstraint("student_id", "class_id"),)
 
-    class_id = db.Column(db.String(30), primary_key=True)
-    course_id = db.Column(db.String(20), db.ForeignKey("courses.course_id"), nullable=False)
-    term_id = db.Column(db.Integer, db.ForeignKey("registration_terms.term_id"), nullable=False)
-    lecturer_id = db.Column(db.String(20), db.ForeignKey("users.user_id"))
-    room = db.Column(db.String(30))
-    day_of_week = db.Column(db.Integer, nullable=False)       # 2..8
-    start_period = db.Column(db.Integer, nullable=False)
-    end_period = db.Column(db.Integer, nullable=False)
-    capacity = db.Column(db.Integer, nullable=False, default=50)
+    enrollment_id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.String(20), db.ForeignKey("users.user_id"), nullable=False)
+    class_id = db.Column(db.String(30), db.ForeignKey("class_sections.class_id"), nullable=False)
+    status = db.Column(db.String(15), nullable=False, default="REGISTERED")  # REGISTERED | CANCELLED
+    midterm = db.Column(db.Float)
+    final = db.Column(db.Float)
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
-    course = db.relationship("Course")
-    term = db.relationship("RegistrationTerm")
-    lecturer = db.relationship("User", foreign_keys=[lecturer_id])
-
-    def conflicts_with(self, other: "ClassSection") -> bool:
-        return (self.term_id == other.term_id and self.day_of_week == other.day_of_week
-                and self.start_period <= other.end_period
-                and other.start_period <= self.end_period)
+    class_section = db.relationship("ClassSection", backref="enrollments")
