@@ -2,16 +2,49 @@ from datetime import datetime
 
 from app.extensions import db
 
+
 class Enrollment(db.Model):
-    __tablename__ = "enrollments"
-    __table_args__ = (db.UniqueConstraint("student_id", "class_id"),)
+    __tablename__ = "enrollment"
+    __table_args__ = (db.UniqueConstraint("studentid", "classid"),)
 
-    enrollment_id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.String(20), db.ForeignKey("users.user_id"), nullable=False)
-    class_id = db.Column(db.String(30), db.ForeignKey("class_sections.class_id"), nullable=False)
-    status = db.Column(db.String(15), nullable=False, default="REGISTERED")  # REGISTERED | CANCELLED
-    midterm = db.Column(db.Float)
-    final = db.Column(db.Float)
-    created_at = db.Column(db.DateTime, default=datetime.now)
+    id = db.Column("enrollmentid", db.String(5), primary_key=True)
+    student_id = db.Column("studentid", db.String(5), db.ForeignKey("student.studentid"), nullable=False)
+    class_id = db.Column("classid", db.String(5), db.ForeignKey("classsection.classid"), nullable=False)
+    enrolled_at = db.Column("enrolledat", db.Date, default=datetime.now)
+    status = db.Column("status", db.String(100), nullable=False, default="REGISTERED")
+    midterm_grade = db.Column("midtermgrade", db.Float)
+    final_grade = db.Column("finalgrade", db.Float)
 
-    class_section = db.relationship("ClassSection", backref="enrollments")
+    class_section = db.relationship("ClassSection", back_populates="enrollments")
+
+    @property
+    def enrollment_id(self):
+        return self.id
+
+    @enrollment_id.setter
+    def enrollment_id(self, value):
+        self.id = value
+
+    @property
+    def midterm(self):
+        return self.midterm_grade
+
+    @midterm.setter
+    def midterm(self, value):
+        self.midterm_grade = value
+
+    @property
+    def final(self):
+        return self.final_grade
+
+    @final.setter
+    def final(self, value):
+        self.final_grade = value
+
+    @property
+    def created_at(self):
+        return self.enrolled_at
+
+    @created_at.setter
+    def created_at(self, value):
+        self.enrolled_at = value

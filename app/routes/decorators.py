@@ -11,6 +11,6 @@ def role_required(*roles):
                 return redirect(url_for("auth.login"))
             if session.get("role") not in roles:
                 abort(403)
-            return f(*args, **kwargs)
+            return view(*args, **kwargs)
         return wrapper
     return decorator
