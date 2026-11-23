@@ -13,6 +13,7 @@ class WishlistRecord(db.Model):
     added_date = db.Column("addeddate", db.Date, default=date.today)
     approval_status = db.Column("approvalstatus", db.String(10), nullable=False, default="DRAFT")
 
+    student = db.relationship("Student")
     course = db.relationship("Course")
 
     @property

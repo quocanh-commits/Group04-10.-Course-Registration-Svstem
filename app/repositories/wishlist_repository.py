@@ -5,8 +5,10 @@ from app.models.wishlist_record import WishlistRecord
 
 
 def list_records(status=None):
-    q = WishlistRecord.query.options(joinedload(WishlistRecord.student),
-                                     joinedload(WishlistRecord.course))
+    q = WishlistRecord.query.options(
+    joinedload(WishlistRecord.student),
+    joinedload(WishlistRecord.course),
+    )
     if status:
         q = q.filter(db.func.upper(db.func.trim(WishlistRecord.approval_status)) == status)
     return q.order_by(WishlistRecord.added_date, WishlistRecord.id).all()

@@ -28,7 +28,7 @@
       <tbody>
         {% for e in enrollments %}{% set c = e.class_section %}
         <tr>
-          <td>{{ day_name(c.day_of_week) }}</td>
+          <td>{{ day_names.get(c.day_of_week, c.day_of_week) }}</td>
           <td>{{ c.start_period }}-{{ c.end_period }}</td>
           <td>{{ c.class_id }}</td>
           <td>{{ c.course.name }}</td>
