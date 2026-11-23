@@ -1,36 +1,48 @@
 {% extends "base.html" %}
+{% block title %}Wishlist · Register{% endblock %}
+{% block breadcrumb %}Wishlist{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="page-header">
+  <div>
+    <h1>Wishlist</h1>
+    <p>Courses you plan to take. Submit an item for approval when you are ready.</p>
+  </div>
+  <a href="{{ url_for('student.course_search') }}" class="btn btn-outline">Browse courses</a>
+</div>
 
-    <h2>Danh sách yêu thích</h2>
-
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Mã học phần</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for item in records %}
-            <tr>
-                <td>{{ item.course_id }}</td>
-                <td>
-                    <form method="post"
-                          action="{{ url_for('student.wishlist_remove', record_id=item.record_id) }}">
-                        <button class="btn btn-danger btn-sm">Xóa</button>
-                    </form>
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="2">Chưa có học phần yêu thích.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+<div class="card">
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th>Code</th><th>Course</th><th>Cr.</th><th>Added</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for r in records %}
+        <tr>
+          <td>{{ r.course_id }}</td>
+          <td>{{ r.course.name }}</td>
+          <td>{{ r.course.credits }}</td>
+          <td>{{ r.added_date }}</td>
+          <td><span class="badge badge-{{ r.approval_status|lower }}">{{ r.approval_status }}</span></td>
+          <td class="actions">
+            {% if r.approval_status in ('DRAFT', 'REJECTED') %}
+            <form method="post" action="{{ url_for('student.wishlist_request', record_id=r.record_id) }}">
+              <button class="btn btn-primary btn-sm">Request approval</button>
+            </form>
+            {% endif %}
+            {% if r.approval_status != 'APPROVED' %}
+            <form method="post" action="{{ url_for('student.wishlist_remove', record_id=r.record_id) }}">
+              <button class="btn btn-danger btn-sm">Remove</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="empty">Your wishlist is empty. Add courses from Course search.</td></tr>
+        {% endfor %}
+      </tbody>
     </table>
-
+  </div>
 </div>
 {% endblock %}
