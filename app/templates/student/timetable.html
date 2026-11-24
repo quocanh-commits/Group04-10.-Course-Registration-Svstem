@@ -3,7 +3,6 @@
 {% block breadcrumb %}Timetable{% endblock %}
 
 {% block content %}
-{% from "_macros.html" import day_name %}
 
 <div class="page-header">
   <div>
@@ -14,26 +13,26 @@
 </div>
 
 <div class="stat-row">
-  <div class="stat"><span class="stat-label">Classes</span><span class="stat-value">{{ enrollments|length }}</span></div>
+  <div class="stat"><span class="stat-label">Classes</span><span class="stat-value">{{ classes|length }}</span></div>
   <div class="stat"><span class="stat-label">Credits</span>
-    <span class="stat-value">{{ enrollments | sum(attribute='class_section.course.credits') }}</span></div>
+    <span class="stat-value">{{ classes | sum(attribute='credits') }}</span></div>
 </div>
 
 <div class="card">
   <div class="table-wrap">
     <table class="data-table">
       <thead>
-        <tr><th>Day</th><th>Periods</th><th>Class</th><th>Course</th><th>Room</th><th>Lecturer</th></tr>
+        <tr><th>Day</th><th>Time</th><th>Class</th><th>Course</th><th>Room</th><th>Lecturer</th></tr>
       </thead>
       <tbody>
-        {% for e in enrollments %}{% set c = e.class_section %}
+        {% for c in classes %}
         <tr>
-          <td>{{ day_names.get(c.day_of_week, c.day_of_week) }}</td>
-          <td>{{ c.start_period }}-{{ c.end_period }}</td>
+          <td>{{ c.day }}</td>
+          <td>{{ c.time }}</td>
           <td>{{ c.class_id }}</td>
-          <td>{{ c.course.name }}</td>
+          <td>{{ c.name }}<span class="course-meta">{{ c.course_id }} · {{ c.credits }} credits</span></td>
           <td>{{ c.room }}</td>
-          <td>{{ c.lecturer.full_name if c.lecturer else 'TBA' }}</td>
+          <td>{{ c.lecturer or 'TBA' }}</td>
         </tr>
         {% else %}
         <tr><td colspan="6" class="empty">No classes scheduled.</td></tr>

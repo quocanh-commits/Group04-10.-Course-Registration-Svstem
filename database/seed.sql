@@ -177,7 +177,7 @@ INSERT INTO registrationTerm (
 ('TERM202601', 'HK1 26-27', '2026-09-01', '2027-01-15', '2026-08-10', '2026-08-25', 'OPEN', 'A0001'),
 ('TERM202602', 'HK2 26-27', '2027-02-01', '2027-06-15', '2027-01-10', '2027-01-25', 'PLANNED', 'A0002');
 
-INSERT INTO wishlistRecord (whistListId, addedDate, approvalStatus, studentId, courseId) VALUES
+INSERT INTO wishlistRecord (wishlistId, addedDate, approvalStatus, studentId, courseId) VALUES
 (1, '2026-08-01', 'APPROVED', 'S0001', 'C0001'),
 (2, '2026-08-01', 'APPROVED', 'S0002', 'C0002'),
 (3, '2026-08-01', 'PENDING', 'S0003', 'C0003'),
@@ -748,3 +748,10 @@ INSERT INTO payment (transactionId, amount, paymentDate, status, studentId) VALU
 (58, 15000000, '2026-09-07', 'PAID', 'S0058'),
 (59, 15000000, '2026-08-29', 'PENDING', 'S0059'),
 (60, 15000000, '2026-09-07', 'PAID', 'S0060');
+
+-- Đồng bộ sĩ số theo số lượt đăng ký thực tế (gộp từ migration 002)
+UPDATE classSection AS cs
+SET currentEnrollment = (
+    SELECT COUNT(*) FROM enrollment e
+    WHERE e.classId = cs.classId AND e.status = 'ENROLLED'
+);

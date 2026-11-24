@@ -11,7 +11,7 @@ class Enrollment(db.Model):
     student_id = db.Column("studentid", db.String(5), db.ForeignKey("student.studentid"), nullable=False)
     class_id = db.Column("classid", db.String(5), db.ForeignKey("classsection.classid"), nullable=False)
     enrolled_at = db.Column("enrolledat", db.Date, default=datetime.now)
-    status = db.Column("status", db.String(100), nullable=False, default="REGISTERED")
+    status = db.Column("status", db.String(100), nullable=False, default="ENROLLED")
     midterm_grade = db.Column("midtermgrade", db.Float)
     final_grade = db.Column("finalgrade", db.Float)
 

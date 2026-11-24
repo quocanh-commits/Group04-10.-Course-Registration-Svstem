@@ -1,30 +1,37 @@
 services:
   db:
     image: postgres:15-alpine
-    container_name: course_reg_db
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: your_password
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: register_portal
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d register_portal"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   web:
-    build: .
-    container_name: course_reg_web
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: always
+    command: sh -c "python scripts/set_passwords.py && flask --app run.py run --host=0.0.0.0 --port=5000"
     ports:
       - "5000:5000"
-    env_file:
-      - .env
     environment:
-      # Ghi đè host database trỏ tới tên service 'db' trong Docker network
-      DATABASE_URL: postgresql://postgres:your_password@db:5432/register_portal
+      SECRET_KEY: ${SECRET_KEY:-change-this-secret}
+      DATABASE_URL: postgresql+psycopg2://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/register_portal
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
   postgres_data:

@@ -7,7 +7,7 @@ class WishlistRecord(db.Model):
     __tablename__ = "wishlistrecord"
     __table_args__ = (db.UniqueConstraint("studentid", "courseid"),)
 
-    id = db.Column("wishlistid", db.String(5), primary_key=True)
+    id = db.Column("wishlistid", db.Integer, primary_key=True)
     student_id = db.Column("studentid", db.String(5), db.ForeignKey("student.studentid"), nullable=False)
     course_id = db.Column("courseid", db.String(5), db.ForeignKey("course.courseid"), nullable=False)
     added_date = db.Column("addeddate", db.Date, default=date.today)

@@ -25,10 +25,14 @@
     <tbody>
       {% for r in records %}
       <tr>
-      <td>
-        <span class="course-title">{{ r.student_id }}</span>
-        <span class="course-meta">Student</span>
-      </td>
+        <td>
+          <span class="course-title">{{ r.student }}</span>
+          <span class="course-meta">{{ r.student_id }}</span>
+        </td>
+        <td>
+          <span class="course-title">{{ r.course }}</span>
+          <span class="course-meta">{{ r.course_id }} · {{ r.credits }} credits</span>
+        </td>
         <td>{{ r.added }}</td>
         <td><span class="badge {{ 'badge-available' if r.status == 'APPROVED' else ('badge-selected' if r.status == 'PENDING' else 'badge-error') }}">{{ r.status }}</span></td>
         <td>

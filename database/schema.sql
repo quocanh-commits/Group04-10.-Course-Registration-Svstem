@@ -78,8 +78,8 @@ CREATE TABLE enrollment (
     enrollmentId CHAR(5) PRIMARY KEY,
     enrolledAt DATE NOT NULL,
     status VARCHAR(100) NOT NULL,
-    midTermGrade REAL NOT NULL,
-    finalGrade REAL NOT NULL,
+    midTermGrade REAL,
+    finalGrade REAL,
     classId CHAR(5) NOT NULL,
     studentId CHAR(5) NOT NULL,
     CONSTRAINT fk_enrollment_class
@@ -93,7 +93,7 @@ CREATE TABLE enrollment (
 );
 
 CREATE TABLE wishlistRecord (
-    whistListId INTEGER PRIMARY KEY,
+    wishlistId INTEGER PRIMARY KEY,
     addedDate DATE NOT NULL,
     approvalStatus VARCHAR(100) NOT NULL,
     studentId CHAR(5) NOT NULL,
