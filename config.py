@@ -5,9 +5,10 @@ load_dotenv()
 
 
 class Config:
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-change-me")
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    if not SQLALCHEMY_DATABASE_URI:
+        raise RuntimeError("Thiếu DATABASE_URL. Hãy chạy bằng: docker compose up --build")
 
     MAX_CREDITS = 24
     TUITION_PER_CREDIT = 1250000
